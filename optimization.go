@@ -241,7 +241,7 @@ func main() {
 	}
 
 	jsonString1, _ = json.Marshal(greatCircleDistances)
-	ioutil.WriteFile("dists", jsonString1, 0644)
+	ioutil.WriteFile("optimization_squares_distances", jsonString1, 0644)
 	println("done writing")
 
 }

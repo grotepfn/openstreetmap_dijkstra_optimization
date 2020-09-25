@@ -19,3 +19,4 @@ Test this file with help of optimization_test.go
 ```bash
 go test optimization.go optimization_test.go
 ```
+Also, the file optimization_squares_distances is produced. This file contains a three dimensional array with the same length of optimization_squares. The distances from each border point to each border point of the squares are stored, first all points of the upper x-axis and lower x-axis border. Second the points of the left y-axis and right y-axis borderline.
