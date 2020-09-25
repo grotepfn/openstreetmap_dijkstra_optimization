@@ -20,3 +20,15 @@ Test this file with help of optimization_test.go
 go test optimization.go optimization_test.go
 ```
 Also, the file optimization_squares_distances is produced. This file contains a three dimensional array with the same length of optimization_squares. The distances from each border point to each border point of the squares are stored, first all points of the upper x-axis and lower x-axis border. Second the points of the left y-axis and right y-axis borderline.
+
+Start the golang routing backend with
+```bash
+go run rest.go dijkstra.go
+```
+
+Open the index.html with a webbrowser to use the application.
+
+Run the benchmark comparing different routig algorithms with 
+```bash
+go run routing_benchmark.go dijkstra.go
+```

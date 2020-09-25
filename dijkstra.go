@@ -2,8 +2,6 @@ package main
 
 import (
 	"container/heap"
-	"encoding/json"
-	"io/ioutil"
 	"math"
 )
 
@@ -1779,8 +1777,6 @@ outer2:
 				//println("")
 			}
 
-			jsonString1, _ := json.Marshal(suchraum)
-			ioutil.WriteFile("testtttt", jsonString1, 0644)
 			return pre, distances, node, counterPOPS
 
 		}
