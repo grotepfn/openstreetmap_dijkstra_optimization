@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>Quick Start - Leaflet</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	
+</head>
+<body>
+
+
+
+<div id="mapid" style="width: 600px; height: 400px;"></div>
+<script>
+
+	var mymap = L.map('mapid').setView([51.505, -0.09], 2);
+
+	L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+			'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+		id: 'mapbox/streets-v11',
+		tileSize: 512,
+		zoomOffset: -1
+	}).addTo(mymap);
+
+
+
+
+var firstClick = true
+var polyLine = null
+var LatLng
+var LatLngDes
+
+
+	var popup = L.popup();
+
+
+    function onMapClick(e) {
+   if(firstClick){
+       clearMap()
+        popup
+            .setLatLng(e.latlng)
+            .setContent("You clicked at the map at: " + e.latlng.toString())
+            .openOn(mymap);
+        LatLng = e.latlng
+        firstClick = false}
+        else{
+        
+            firstClick = true
+        popup
+            .setLatLng(e.latlng)
+            .setContent("Destination: " + e.latlng.toString())
+            .openOn(mymap);
+            LatLngDes = e.latlng
+        let url = `http://localhost:8080?lat=${LatLng.lat}&lng=${LatLng.lng}&latDes=${LatLngDes.lat}&lngDes=${LatLngDes.lng}`
+        console.log(`Query: ${url}`)
+        axios.post(url)
+  .then((response) => {
+
+    console.log(response.data);
+ 
+    polyLine = L.polyline(response.data).addTo(mymap);
+  });
+       
+    
+    }
+    }
+   
+
+
+	mymap.on('click', onMapClick);
+
+
+
+    function clearMap() {
+   
+    for(i in mymap._layers) {
+        if(mymap._layers[i]._path != undefined) {
+            try {
+                mymap.removeLayer(mymap._layers[i]);
+            }
+            catch(e) {
+                console.log("problem with " + e + mymap._layers[i]);
+            }
+        }
+    }
+}
+
+</script>
+
+
+
+</body>
+</html>
