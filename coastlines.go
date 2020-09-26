@@ -23,10 +23,7 @@ var nc, wc, rc uint64
 var pointInPolygon [][2]float64
 var pointInWater GeoPoint
 var pointInWater2 GeoPoint
-var pointInWater3 GeoPoint
-var pointInWaterCheck GeoPoint
-var pointNotInWaterCheck GeoPoint
-var pointNotInWaterCheck2 GeoPoint
+
 var bitArray [50][50]bool
 
 var boundingBox [][4]float64
@@ -44,19 +41,15 @@ func main() {
 	println("numcpus " + strconv.Itoa(runtime.NumCPU()))
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	pointInWater = GeoPoint{33.87041555094183, -25.48828125}
+	pointInWater = GeoPoint{90, 0}
 
 	pointInWater2 = GeoPoint{-20.3034175184893, -10.546875}
-	pointInWater3 = GeoPoint{-35.17380831799957, -103.0078125}
-	pointInWaterCheck = GeoPoint{-66.52201581569871, 49.02099609375}
-	pointNotInWaterCheck = GeoPoint{-66.7442398788089, 48.702392578125}
-	pointNotInWaterCheck2 = GeoPoint{-66.52639234726222, 51.119384765625}
 
 	t := time.Now()
 
 	println("starting at " + t.String())
 
-	f, err := os.Open("data/antarctica-latest.osm.pbf")
+	f, err := os.Open("data/planet-coastlines.pbf")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -96,27 +89,6 @@ func main() {
 	t = time.Now()
 	println(t.String())
 
-	/*
-		pointInWater_test := GeoPoint{42.032974332441405, -47.109375}
-
-		pointInWater = GeoPoint{33.87041555094183, -25.48828125}
-
-		var pointNotInWater = GeoPoint{56.944974, 90.703125}
-
-			println("assume nothing")
-			if isPointInWater(pointInWater_test) != true {
-				println("nothing")
-			}
-			println("aussume nothing")
-			if isPointInWater(pointNotInWater) == true {
-				println("nothing")
-			} else {
-				println("somesing")
-			}*/
-
-	//jsonString3, _ := json.Marshal(boundingBox)
-	//ioutil.WriteFile("C:/Users/Florian/Desktop/fapra/fapra/temp/boundingBox", jsonString3, 0644)
-
 	fillRotMap()
 	fillRotMap2()
 
@@ -127,15 +99,6 @@ func main() {
 
 	jsonString1, _ := json.Marshal(bitArray)
 	ioutil.WriteFile("data/bitArray", jsonString1, 0644)
-
-	//jsonString2, _ := json.Marshal(polygon)
-	//ioutil.WriteFile("C:/Users/Florian/Desktop/fapra/fapra/temp/polygon", jsonString2, 0644)
-
-	m := map[string]interface{}{}
-	m["type"] = "Polygon"
-	m["coordinates"] = polygon
-	//jsonString, _ := json.Marshal(m)
-	//ioutil.WriteFile("geojson2.json", jsonString, os.ModePerm)
 
 }
 
@@ -282,7 +245,17 @@ func isCrossing(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
 
 	//https://gis.stackexchange.com/questions/10808/manually-transforming-rotated-lat-lon-to-regular-lat-lon
 
-	if !azimuthMiddle(X, P, A, B) {
+	//A, B and X on the same longitude or P antipodal to X
+
+	var t = false
+	if A.lng == B.lng || P.lng == 0 {
+		//	println("hier")
+		X = pointInWater2
+
+		t = true
+	}
+
+	if !azimuthMiddle(X, P, A, B, t) {
 
 		return false
 	}
@@ -327,7 +300,6 @@ func isCrossing(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
 
 	B2 = 0
 
-	//if (A2.BearingToCopy(X2) >= A2.BearingToCopy(B2) && A2.BearingToCopy(P2) < A2.BearingToCopy(B2)) || (A2.BearingToCopy(X2) <= A2.BearingToCopy(B2) && A2.BearingToCopy(P2) > A2.BearingToCopy(B2)) {
 	if (P2 >= 0 && X2 <= 0) || (P2 <= 0 && X2 >= 0) {
 
 		return true
@@ -336,33 +308,28 @@ func isCrossing(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
 	return false
 }
 
-func azimuthMiddle(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
+func azimuthMiddle(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint, c bool) bool {
 
 	var P2 float64
-	//P2 = rotateLng(P, X)
-
-	var da = getArrayPositionFromCords(P.lat, P.lng)
-	P2 = preRotateBitArray[da[0]*len(bitArray[0])+da[1]]
+	P2 = P.lng
+	if c {
+		var da = getArrayPositionFromCords(P.lat, P.lng)
+		P2 = preRotateBitArray[da[0]*len(bitArray[0])+da[1]]
+	}
 
 	var A2 float64
-	//A2 = rotateLng(A, X)
+	A2 = A.lng
+	if c {
 
-	A2 = mapPreCalcPoly[[2]float64{A.lat, A.lng}]
+		A2 = mapPreCalcPoly[[2]float64{A.lat, A.lng}]
+	}
 
 	var B2 float64
-	//A2 = rotateLng(A, X)
+	B2 = B.lng
+	if c {
 
-	B2 = mapPreCalcPoly[[2]float64{B.lat, B.lng}]
-
-	//var da3 = getArrayPositionFromCords(B.lat, B.lng)
-	//B2 = mapTest[[2]int{da3[0], da3[1]}]
-
-	/*
-		var N = GeoPoint{90, 0}
-		var N2 GeoPoint
-		N2 = rotate(N, X)*/
-
-	//X2 := GeoPoint{90, 180}
+		B2 = mapPreCalcPoly[[2]float64{B.lat, B.lng}]
+	}
 
 	var ln = 0.0
 	if (P2 - B2) < -180 {
@@ -383,24 +350,9 @@ func azimuthMiddle(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
 		ln = A2 - B2
 	}
 	A2 = ln
-	/*
-		if (B2.lng - A2.lng) < -180 {
-			ln = modLikePython((B2.lng - A2.lng), 180.0)
-		} else if (B2.lng - A2.lng) > 180 {
-			ln = -180 + (B2.lng - A2.lng - 180)
-		} else {
-			ln = B2.lng - A2.lng
-		}*/
+
 	B2 = 0
 
-	//	X2 := GeoPoint{90, 180}
-
-	/*
-		P2 = GeoPoint{P2.lat, P2.lng - N2.lng}
-		A2 = GeoPoint{A2.lat, A2.lng - N2.lng}
-		B2 = GeoPoint{B2.lat, B2.lng - N2.lng}*/
-
-	//	if (X2.BearingToCopy(P2) <= X2.BearingToCopy(A2) && X2.BearingToCopy(P2) >= X2.BearingToCopy(B2)) || (X2.BearingToCopy(P2) >= X2.BearingToCopy(A2) && X2.BearingToCopy(P2) <= X2.BearingToCopy(B2)) {
 	if (P2 >= B2 && P2 <= A2) || (P2 <= B2 && P2 >= A2) {
 
 		return true
@@ -416,7 +368,7 @@ func checkPolygon(X GeoPoint, P GeoPoint, B [][2]float64) bool {
 
 	for i := 0; i <= len(B)-2; i++ {
 
-		//lat lon
+		//lat lon geojson format
 		if isCrossing(X, P, GeoPoint{B[i][1], B[i][0]}, GeoPoint{B[i+1][1], B[i+1][0]}) {
 
 			counter++
@@ -454,48 +406,6 @@ func isPointInWater(point GeoPoint) bool {
 	return true
 
 }
-
-//https://gis.stackexchange.com/questions/10808/manually-transforming-rotated-lat-lon-to-regular-lat-lon
-/*func rotate(P GeoPoint, X GeoPoint) GeoPoint {
-
-	var latX = X.lat
-	var lonX = X.lng
-
-	latX = -latX
-
-	//south north pole
-	if lonX > 0 {
-		lonX = -(180 - lonX)
-	} else if lonX < 0 {
-		lonX = 180 + lonX
-	} else if lonX == 0 {
-		lonX = 180
-	}
-
-	var lon = (P.lng * math.Pi) / 180
-	var lat = (P.lat * math.Pi) / 180
-
-	var x = math.Cos(lon) * math.Cos(lat)
-	var y = math.Sin(lon) * math.Cos(lat)
-	var z = math.Sin(lat)
-
-	var theta = (90 + latX)
-	theta = (theta * math.Pi) / 180
-	var phi = lonX
-	phi = (phi * math.Pi) / 180
-
-	var newX = math.Cos(theta)*math.Cos(phi)*x + math.Cos(theta)*math.Sin(phi)*y + math.Sin(theta)*z
-
-	var newY = -math.Sin(phi)*x + math.Cos(phi)*y
-
-	var newZ = -math.Sin(theta)*math.Cos(phi)*x - math.Sin(theta)*math.Sin(phi)*y + math.Cos(theta)*z
-
-	var newLat = math.Asin(newZ)
-	newLat = (newLat * 180) / math.Pi
-	var newLng = math.Atan2(newY, newX)
-	newLng = (newLng * 180) / math.Pi
-	return GeoPoint{newLat, newLng}
-}*/
 
 func rotateLng(P GeoPoint, X GeoPoint) float64 {
 
@@ -548,15 +458,15 @@ func fillBitArray() {
 				var bla = getCordsFromArrayPosition(i, j)
 				var x = GeoPoint{bla[0], bla[1]}
 				bitArray[i][j] = isPointInWater(x)
-				//bitArray[i][j] = isPointInWater(GeoPoint{90 - (float64(i) * 180.0 / float64(len(bitArray))), -180 + float64(j)*360/float64(len(bitArray[i]))})
+
 			}
-			//println(i)
+
 		}(i)
 	}
 	wg.Wait()
 
-	for i := 0; i <= len(bitArray)-1; i = i + 10 {
-		for j := 0; j <= len(bitArray[i])-1; j = j + 10 {
+	for i := 0; i <= len(bitArray)-1; i = i + 1 {
+		for j := 0; j <= len(bitArray[i])-1; j = j + 1 {
 
 			if bitArray[i][j] {
 				print(" ")
@@ -568,24 +478,6 @@ func fillBitArray() {
 	}
 }
 
-// BearingTo: Calculates the initial bearing (sometimes referred to as forward azimuth)
-// Original Implementation from: http://www.movable-type.co.uk/scripts/latlong.html
-//geo "github.com/kellydunn/golang-geo"
-func (p GeoPoint) BearingToCopy(p2 GeoPoint) float64 {
-
-	dLon := (p2.lng - p.lng) * math.Pi / 180.0
-
-	lat1 := p.lat * math.Pi / 180.0
-	lat2 := p2.lat * math.Pi / 180.0
-
-	y := math.Sin(dLon) * math.Cos(lat2)
-	x := math.Cos(lat1)*math.Sin(lat2) -
-		math.Sin(lat1)*math.Cos(lat2)*math.Cos(dLon)
-	brng := math.Atan2(y, x) * 180.0 / math.Pi
-
-	return brng
-}
-
 //https://stackoverflow.com/questions/43018206/modulo-of-negative-integers-in-go
 func modLikePython(d, m float64) float64 {
 	var res float64 = math.Mod(d, m)
@@ -594,33 +486,6 @@ func modLikePython(d, m float64) float64 {
 	}
 	return res
 }
-
-/*func azimuthMiddleCopy(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
-
-	var P2 GeoPoint
-	P2 = rotate(P, X)
-
-	var A2 GeoPoint
-	A2 = rotate(A, X)
-
-	var B2 GeoPoint
-	B2 = rotate(B, X)
-
-	X2 := GeoPoint{90, 180}
-
-	P2 = GeoPoint{P2.lat, P2.lng - B2.lng}
-	A2 = GeoPoint{A2.lat, A2.lng - B2.lng}
-	B2 = GeoPoint{B2.lat, 0}
-
-	if (X2.BearingToCopy(P2) <= X2.BearingToCopy(A2) && X2.BearingToCopy(P2) >= X2.BearingToCopy(B2)) || (X2.BearingToCopy(P2) >= X2.BearingToCopy(A2) && X2.BearingToCopy(P2) <= X2.BearingToCopy(B2)) {
-
-		return true
-
-	}
-
-	return false
-
-}*/
 
 func fillRotMap() {
 
@@ -633,7 +498,7 @@ func fillRotMap() {
 			for j := 0; j <= len(bitArray[0])-1; j++ {
 
 				var x = getCordsFromArrayPosition(i, j)
-				var z = rotateLng(GeoPoint{x[0], x[1]}, pointInWater)
+				var z = rotateLng(GeoPoint{x[0], x[1]}, pointInWater2)
 				preRotateBitArray[i*len(bitArray[0])+j] = z
 			}
 		}(i)
@@ -651,7 +516,7 @@ func fillRotMap2() {
 			for j := 0; j <= len(polygon[i])-1; j++ {
 				var x = polygon[i][j]
 				//CAUTION 1 0
-				var z = rotateLng(GeoPoint{x[1], x[0]}, pointInWater)
+				var z = rotateLng(GeoPoint{x[1], x[0]}, pointInWater2)
 
 				lock.Lock()
 				mapPreCalcPoly[[2]float64{x[1], x[0]}] = z

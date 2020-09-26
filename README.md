@@ -28,7 +28,7 @@ go run rest.go dijkstra.go
 
 Open the index.html with a webbrowser to use the application.
 
-Run the benchmark comparing different routig algorithms with 
+Run the benchmark comparing different routing algorithms with 
 ```bash
 go run routing_benchmark.go dijkstra.go
 ```
