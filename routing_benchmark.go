@@ -279,7 +279,7 @@ func main() {
 	t = time.Now()
 	println(t.String())
 	counterPOPS = 0
-	for i := 0; i <= -1; i++ {
+	for i := 0; i <= 100; i++ {
 
 		var _, _, _, counter = a_stern_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares)
 		counterPOPS = counterPOPS + counter
@@ -296,7 +296,7 @@ func main() {
 	println(t.String())
 	counterPOPS = 0
 
-	for i := 0; i <= -1; i++ {
+	for i := 0; i <= 100; i++ {
 
 		var _, _, _, counter = a_stern_single_optimized(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
 		counterPOPS = counterPOPS + counter
@@ -305,7 +305,7 @@ func main() {
 	println("pops a stern single opt ")
 	println(counterPOPS)
 
-	println("a stern single opt old")
+	println("a stern single opt with pre")
 	t = time.Now()
 	println(t.String())
 	counterPOPS = 0
@@ -316,7 +316,7 @@ func main() {
 		counterPOPS = counterPOPS + counter
 
 	}
-	println("pops a stern single opt old")
+	println("pops a stern single opt with pre")
 	println(counterPOPS)
 
 	println("dijkstra single")

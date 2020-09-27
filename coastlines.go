@@ -24,7 +24,7 @@ var pointInPolygon [][2]float64
 var pointInWater GeoPoint
 var pointInWater2 GeoPoint
 
-var bitArray [50][50]bool
+var bitArray [500][1000]bool
 
 var boundingBox [][4]float64
 
@@ -248,13 +248,15 @@ func isCrossing(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
 	//A, B and X on the same longitude or P antipodal to X
 
 	var t = false
-	if A.lng == B.lng || P.lng == 0 {
+	if A.lng == B.lng || A.lng == P.lng || B.lng == P.lng || X.lng == A.lng || X.lng == B.lng || X.lng == P.lng || P.lng == -180 || P.lng == -90 || P.lng == 90 {
 		//	println("hier")
 		X = pointInWater2
 
 		t = true
 	}
-
+	X = pointInWater2
+	t = true
+	//t = true
 	if !azimuthMiddle(X, P, A, B, t) {
 
 		return false
@@ -313,22 +315,23 @@ func azimuthMiddle(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint, c bool) bool 
 	var P2 float64
 	P2 = P.lng
 	if c {
-		var da = getArrayPositionFromCords(P.lat, P.lng)
-		P2 = preRotateBitArray[da[0]*len(bitArray[0])+da[1]]
+		//var da = getArrayPositionFromCords(P.lat, P.lng)
+		//P2 = preRotateBitArray[da[0]*len(bitArray[0])+da[1]]
+		P2 = rotateLng(P, X)
 	}
 
 	var A2 float64
 	A2 = A.lng
 	if c {
-
-		A2 = mapPreCalcPoly[[2]float64{A.lat, A.lng}]
+		A2 = rotateLng(A, X)
+		//	A2 = mapPreCalcPoly[[2]float64{A.lat, A.lng}]
 	}
 
 	var B2 float64
 	B2 = B.lng
 	if c {
-
-		B2 = mapPreCalcPoly[[2]float64{B.lat, B.lng}]
+		B2 = rotateLng(B, X)
+		//B2 = mapPreCalcPoly[[2]float64{B.lat, B.lng}]
 	}
 
 	var ln = 0.0
@@ -393,7 +396,7 @@ func isPointInWater(point GeoPoint) bool {
 
 	for i := 0; i <= len(polygon)-1; i++ {
 
-		if (point.lng >= boundingBox[i][0] && point.lng <= boundingBox[i][1] && point.lat >= boundingBox[i][2] && point.lat <= boundingBox[i][3]) || (point.lng <= -160 && boundingBox[i][2] >= 179) {
+		if point.lng >= boundingBox[i][0] && point.lng <= boundingBox[i][1] && point.lat >= boundingBox[i][2] && point.lat <= boundingBox[i][3] { //|| (point.lng <= -160 && boundingBox[i][2] >= 179) {
 
 			if checkPolygon(pointInWater, point, polygon[i]) == false {
 
@@ -470,6 +473,7 @@ func fillBitArray() {
 
 			if bitArray[i][j] {
 				print(" ")
+
 			} else {
 				print("X")
 			}

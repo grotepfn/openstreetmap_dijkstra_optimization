@@ -5,6 +5,7 @@ import (
 	"math"
 )
 
+//From https://golang.org/pkg/container/heap/
 // An Item is something we manage in a priority queue.
 type Item struct {
 	pos       [2]int  // The value of the item; arbitrary.
@@ -438,9 +439,7 @@ outer2:
 		}
 
 		if visitedPoints[node[0]*len(result[0])+node[1]] == true {
-			println("fehler")
-			println(node[0])
-			println(node[1])
+
 			continue outer2
 		}
 
@@ -466,14 +465,11 @@ outer2:
 			for xAxis := optEgdes[k][0][1]; xAxis <= optEgdes[k][1][1]; xAxis++ {
 
 				if visitedPoints[optEgdes[k][0][0]*len(result[0])+xAxis] == true {
-					println("fehler11111111")
-					println(node[0])
-					println(node[1])
 
 				}
 
 				if visitedPoints[optEdges[k][1][0]*len(result[0])+xAxis] == true {
-					println("FEEEEHLER")
+
 					continue
 				}
 
@@ -491,9 +487,6 @@ outer2:
 
 					heap.Push(&pq, newItem)
 					if visitedPoints[optEgdes[k][0][0]*len(result[0])+xAxis] == true {
-						println("fehler11111111")
-						println(node[0])
-						println(node[1])
 
 					}
 				}
@@ -513,9 +506,6 @@ outer2:
 					heap.Push(&pq, newItem2)
 
 					if visitedPoints[optEgdes[k][1][0]*len(result[0])+xAxis] == true {
-						println("fehler111111112222222222222")
-						println(node[0])
-						println(node[1])
 
 					}
 				}
@@ -524,20 +514,6 @@ outer2:
 
 			//left right
 			for yAxis := optEgdes[k][0][0]; yAxis <= optEgdes[k][1][0]; yAxis++ {
-
-				if visitedPoints[(yAxis)*len(result[0])+optEgdes[k][0][1]] == true {
-					println("fehler11111111222222222222233333333")
-					println(node[0])
-					println(node[1])
-
-				}
-
-				if visitedPoints[(yAxis)*len(result[0])+optEgdes[k][1][1]] == true {
-					println("fehler11111111222222222222233333333")
-					println(node[0])
-					println(node[1])
-
-				}
 
 				//left line
 
@@ -553,13 +529,6 @@ outer2:
 
 					heap.Push(&pq, newItem)
 
-					if visitedPoints[(yAxis)*len(result[0])+optEgdes[k][0][1]] == true {
-						println("fehler11111111222222222222233333333")
-						println(node[0])
-						println(node[1])
-
-					}
-
 				}
 
 				//right line
@@ -569,24 +538,13 @@ outer2:
 				alt = distances[node[0]*len(result[0])+node[1]] + distance
 				altHelp = GreatCircleDistance(getCordsFromArrayPosition(result, yAxis, optEgdes[k][1][1]), getCordsFromArrayPosition(result, pos3, pos4))
 
-				if visitedPoints[(yAxis)*len(result[0])+optEgdes[k][1][1]] == true {
-					println("fehler11111111222222222222233333333")
-					println(node[0])
-					println(node[1])
-
-				}
 				if alt < distances[(yAxis)*len(result[0])+optEgdes[k][1][1]] {
 					newItem2 := &Item{pos: [2]int{yAxis, optEgdes[k][1][1]}, distance: -alt - altHelp, optimized: true, distance2: -alt}
 					pre[(yAxis)*len(result[0])+optEgdes[k][1][1]] = []int{node[0], node[1]}
 					distances[(yAxis)*len(result[0])+optEgdes[k][1][1]] = alt
 
 					heap.Push(&pq, newItem2)
-					if visitedPoints[(yAxis)*len(result[0])+optEgdes[k][1][1]] == true {
-						println("fehler11111111222222222222233333333")
-						println(node[0])
-						println(node[1])
 
-					}
 				}
 			}
 
@@ -653,12 +611,7 @@ outer2:
 				newItem := &Item{pos: neighbours[k], distance2: -alt, distance: -alt - GreatCircleDistance(getCordsFromArrayPosition(result, neighbours[k][0], neighbours[k][1]), getCordsFromArrayPosition(result, pos3, pos4))}
 				pre[neighbours[k][0]*len(result[0])+neighbours[k][1]] = []int{node[0], node[1]}
 				distances[neighbours[k][0]*len(result[0])+neighbours[k][1]] = alt
-				if visitedPoints[neighbours[k][0]*len(result[0])+neighbours[k][1]] == true {
-					println("fehler11111111222222222222233333333")
-					println(node[0])
-					println(node[1])
 
-				}
 				heap.Push(&pq, newItem)
 
 			}
@@ -761,7 +714,7 @@ outer2:
 
 		if visitedPoints[node[0]*len(result[0])+node[1]] != false {
 			counterPOPS--
-			println("fehler")
+
 			//println(node[0])
 			//println(node[1])
 
@@ -2021,37 +1974,24 @@ outer2:
 			//continue outer2
 
 		}
-		/*
-			if k != -1 && node[0] >= optEgdes[k][0][0] && node[1] >= optEgdes[k][0][1] && node[0] <= optEgdes[k][1][0] && node[1] <= optEgdes[k][1][1] && (pos3 >= optEgdes[k][0][0] && pos4 >= optEgdes[k][0][1] && pos3 <= optEgdes[k][1][0] && pos4 <= optEgdes[k][1][1]) {
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, node[0], node[1]), getCordsFromArrayPosition(result, pos3, pos4))
+		if k != -1 && node[0] >= optEgdes[k][0][0] && node[1] >= optEgdes[k][0][1] && node[0] <= optEgdes[k][1][0] && node[1] <= optEgdes[k][1][1] && (pos3 >= optEgdes[k][0][0] && pos4 >= optEgdes[k][0][1] && pos3 <= optEgdes[k][1][0] && pos4 <= optEgdes[k][1][1]) {
 
-				var alt = distances[node[0]*len(result[0])+node[1]] + distance
-				//var alt2 = alt + GreatCircleDistance(getCordsFromArrayPosition(result, neighbours[k][0], neighbours[k][1]), getCordsFromArrayPosition(result, pos3, pos4))
+			var distance = GreatCircleDistance(getCordsFromArrayPosition(result, node[0], node[1]), getCordsFromArrayPosition(result, pos3, pos4))
 
-				if alt <= distances[pos3*len(result[0])+pos4] {
+			var alt = distances[node[0]*len(result[0])+node[1]] + distance
+			//var alt2 = alt + GreatCircleDistance(getCordsFromArrayPosition(result, neighbours[k][0], neighbours[k][1]), getCordsFromArrayPosition(result, pos3, pos4))
 
-					pre[pos3*len(result[0])+pos4] = []int{node[0], node[1]}
-					distances[pos3*len(result[0])+pos4] = alt
+			if alt <= distances[pos3*len(result[0])+pos4] {
 
-				}
-				println("optimized amount")
-				for i := 0; i <= len(result)-1; i = i + 10 {
-					for j := 0; j <= len(result[i])-1; j = j + 10 {
+				pre[pos3*len(result[0])+pos4] = []int{node[0], node[1]}
+				distances[pos3*len(result[0])+pos4] = alt
 
-						if suchraum[i*len(result[0])+j] == true {
-							print("X")
-						} else {
-							print(" ")
-						}
-					}
-					println("")
-				}
-				println("optimized amount")
-				println(optimizedAmount)
-				return pre, distances, node, counterPOPS
 			}
-		*/
+
+			return pre, distances, node, counterPOPS
+		}
+
 		var neighbours = getEdgesPosition(node[0], node[1])
 
 	neig:
