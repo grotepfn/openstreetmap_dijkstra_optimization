@@ -315,23 +315,23 @@ func azimuthMiddle(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint, c bool) bool 
 	var P2 float64
 	P2 = P.lng
 	if c {
-		//var da = getArrayPositionFromCords(P.lat, P.lng)
-		//P2 = preRotateBitArray[da[0]*len(bitArray[0])+da[1]]
-		P2 = rotateLng(P, X)
+		var da = getArrayPositionFromCords(P.lat, P.lng)
+		P2 = preRotateBitArray[da[0]*len(bitArray[0])+da[1]]
+		//P2 = rotateLng(P, X)
 	}
 
 	var A2 float64
 	A2 = A.lng
 	if c {
-		A2 = rotateLng(A, X)
-		//	A2 = mapPreCalcPoly[[2]float64{A.lat, A.lng}]
+		//A2 = rotateLng(A, X)
+		A2 = mapPreCalcPoly[[2]float64{A.lat, A.lng}]
 	}
 
 	var B2 float64
 	B2 = B.lng
 	if c {
-		B2 = rotateLng(B, X)
-		//B2 = mapPreCalcPoly[[2]float64{B.lat, B.lng}]
+		//B2 = rotateLng(B, X)
+		B2 = mapPreCalcPoly[[2]float64{B.lat, B.lng}]
 	}
 
 	var ln = 0.0
@@ -468,8 +468,8 @@ func fillBitArray() {
 	}
 	wg.Wait()
 
-	for i := 0; i <= len(bitArray)-1; i = i + 1 {
-		for j := 0; j <= len(bitArray[i])-1; j = j + 1 {
+	for i := 0; i <= len(bitArray)-1; i = i + 10 {
+		for j := 0; j <= len(bitArray[i])-1; j = j + 10 {
 
 			if bitArray[i][j] {
 				print(" ")
