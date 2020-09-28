@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"os"
 	"strconv"
@@ -78,6 +79,25 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 	println(pops2)
 
 	var way = getShortestPath2(desPos[0], desPos[1], pre)
+
+	var divided = true
+	for divided {
+		divided = false
+		for i := 0; i <= len(way)-2; i = i + 2 {
+
+			if math.Abs(float64(way[i][0]-way[i+1][0])) >= 2 || math.Abs(float64(way[i][1]-way[i+1][1])) >= 2 {
+				divided = true
+
+				var midPoint = getMidPoint(way[i][0], way[i][1], way[i+1][0], way[i+1][1])
+
+				way = insert(way, i+1, midPoint)
+
+			}
+
+		}
+	}
+	//println(len(way))
+
 	var wayCords [][2]float64
 	for i := 0; i <= len(way)-1; i++ {
 
@@ -140,8 +160,55 @@ func main() {
 
 	json.Unmarshal([]byte(byteValue), &distsOpt)
 
+	for i := 0; i <= len(optEdges)-1; i++ {
+
+		for j := 0; j <= optEdges[i][1][0]-optEdges[i][0][0]; j++ {
+
+			for k := 0; k <= optEdges[i][1][1]-optEdges[i][0][1]; k++ {
+
+				var list = mapPointSquares[[2]int{optEdges[i][0][0] + j, optEdges[i][0][1] + k}]
+				list = append(list, i)
+				mapPointSquares[[2]int{optEdges[i][0][0] + j, optEdges[i][0][1] + k}] = list
+
+			}
+		}
+
+	}
+
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", homeLink)
 	log.Fatal(http.ListenAndServe(":8080", router))
 
+}
+
+//https://de.mathworks.com/matlabcentral/answers/229312-how-to-calculate-the-middle-point-between-two-points-on-the-earth-in-matlab
+func getMidPoint(lat1, lng1, lat2, lng2 int) [2]int {
+
+	var l = getCordsFromArrayPosition(result, lat1, lng1)
+	var la = l[0]
+	var ln = l[1]
+	l = getCordsFromArrayPosition(result, lat2, lng2)
+	var la2 = l[0]
+	var ln2 = l[1]
+
+	var Bx = math.Cos(la2*(math.Pi/180.0)) * math.Cos((ln2-ln)*(math.Pi/180.0))
+	var By = math.Cos(la2*(math.Pi/180.0)) * math.Sin((ln2-ln)*(math.Pi/180.0))
+
+	var latMid = (180 / math.Pi) * math.Atan2(math.Sin(la*(math.Pi/180.0))+math.Sin(la2*(math.Pi/180.0)), math.Sqrt((math.Cos(la*(math.Pi/180.0))+Bx)*(math.Cos(la*(math.Pi/180.0))+Bx)+By*By))
+
+	var lonMid = ln + (180/math.Pi)*math.Atan2(By, math.Cos(la*(math.Pi/180.0))+Bx)
+
+	return getArrayPositionFromCords(result, latMid, lonMid)
+
+}
+
+//https://stackoverflow.com/questions/46128016/insert-a-value-in-a-slice-at-a-given-index
+// 0 <= index <= len(a)
+func insert(a [][2]int, index int, value [2]int) [][2]int {
+	if len(a) == index { // nil or empty slice or after last element
+		return append(a, value)
+	}
+	a = append(a[:index+1], a[index:]...) // index < len(a)
+	a[index] = value
+	return a
 }

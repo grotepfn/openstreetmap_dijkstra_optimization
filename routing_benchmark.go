@@ -371,6 +371,32 @@ func main() {
 	t = time.Now()
 	println(t.String())
 
+	println("test")
+	for i := 0; i <= 100; i++ {
+
+		t = time.Now()
+		println(t.String())
+		var pre, _, _, _ = dijkstra_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
+		t = time.Now()
+		println(t.String())
+
+		t = time.Now()
+		println(t.String())
+		var pre2, _, _, _ = a_stern_single_optimized_with_pre(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
+
+		t = time.Now()
+		println(t.String())
+		var ways = getShortestPath2(rnd[i][0], rnd[i][1], pre)
+		var ways2 = getShortestPath2(rnd[i][0], rnd[i][1], pre2)
+
+		println(ways[int(float64(len(ways))*0.5)][0])
+		println(ways2[int(float64(len(ways2))*0.5)][0])
+
+		if len(ways) != len(ways2) {
+			println("ja")
+		}
+	}
+
 	for i := 0; i <= len(result)-1; i = i + 10 {
 		for j := 0; j <= len(result[i])-1; j = j + 10 {
 
