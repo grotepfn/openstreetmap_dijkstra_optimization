@@ -21,6 +21,8 @@ var mapPointSquares = make(map[[2]int][]int)
 
 func homeLink(w http.ResponseWriter, r *http.Request) {
 
+	var algorithm = r.URL.Query().Get("algorithm")
+
 	var lat = r.URL.Query().Get("lat")
 	var lng = r.URL.Query().Get("lng")
 	println(lat)
@@ -51,10 +53,10 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 
 	var startPos = getArrayPositionFromCords(result, la, ln)
 
-	var _, distances, _, pops = dijkstra_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
-	var _, distances3, _, pops3 = a_stern_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges)
+	var pre, distances, _, pops = dijkstra_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
+	var pre2, distances3, _, pops3 = a_stern_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges)
 	var _, distances4, _, pops4 = dijkstra_single_optimized_old(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges)
-	var pre, distances5, _, pops5 = a_stern_single_optimized_with_pre(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
+	var _, distances5, _, pops5 = a_stern_single_optimized_with_pre(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
 
 	var _, distances2, _, pops2 = dijkstra_single(startPos[0], startPos[1], desPos[0], desPos[1])
 
@@ -78,7 +80,14 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 	println(distances2[desPos[0]*len(result[0])+desPos[1]])
 	println(pops2)
 
-	var way = getShortestPath2(desPos[0], desPos[1], pre)
+	var way [][2]int
+	if algorithm == "dijkstra" {
+		println("dijkstra")
+		way = getShortestPath2(desPos[0], desPos[1], pre)
+	} else if algorithm == "astar" {
+		println("astern")
+		way = getShortestPath2(desPos[0], desPos[1], pre2)
+	}
 
 	var divided = true
 	for divided {

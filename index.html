@@ -2,6 +2,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+
+    <label for="algorithm">Choose an algorithm:</label>
+
+<select name="algorithms" id="algorithms">
+  <option value="dijkstra">Dijkstra</option>
+  <option value="bidijkstra">Bidirectional dijkstra</option>
+  <option value="dijkstraopt">Dijkstra optimized</option>
+  <option value="astar">A*</option>
+  <option value="biastar">Bidirectional A*</option>
+  <option value="astaropt">A* optimized</option>
+</select>
 	
 	<title>Quick Start - Leaflet</title>
     <button onclick="send()">Send</button>
@@ -50,12 +62,15 @@ var firstClick = true
 var polyLine = null
 var LatLng
 var LatLngDes
-
+var algorithm ="dijkstra"
 
 	var popup = L.popup();
 
 
     function onMapClick(e) {
+
+        algorithm = document.getElementById('algorithms').value;
+        console.log(algorithm)
    if(firstClick){
        clearMap()
         popup
@@ -82,7 +97,7 @@ var LatLngDes
             document.getElementById("desLatitude").value = e.latlng.lat;
         document.getElementById("desLongitude").value = e.latlng.lng;
            
-        let url = `http://localhost:8080?lat=${LatLng.lat}&lng=${LatLng.lng}&latDes=${LatLngDes.lat}&lngDes=${LatLngDes.lng}`
+        let url = `http://localhost:8080?lat=${LatLng.lat}&lng=${LatLng.lng}&latDes=${LatLngDes.lat}&lngDes=${LatLngDes.lng}&algorithm=${algorithm}`
         console.log(`Query: ${url}`)
         axios.post(url)
   .then((response) => {
@@ -101,6 +116,10 @@ var LatLngDes
 
     function send() {
   
+
+        algorithm = document.getElementById('algorithms').value;
+        console.log(algorithm)
+      
        clearMap()
       
 
@@ -118,7 +137,7 @@ var LatLngDes
 
          
            
-        let url = `http://localhost:8080?lat=${LatLng.lat}&lng=${LatLng.lng}&latDes=${LatLngDes.lat}&lngDes=${LatLngDes.lng}`
+        let url = `http://localhost:8080?lat=${LatLng.lat}&lng=${LatLng.lng}&latDes=${LatLngDes.lat}&lngDes=${LatLngDes.lng}&algorithm=${algorithm}`
         console.log(`Query: ${url}`)
         axios.post(url)
   .then((response) => {
