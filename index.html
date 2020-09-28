@@ -4,7 +4,15 @@
 <head>
 	
 	<title>Quick Start - Leaflet</title>
-
+    <button onclick="send()">Send</button>
+    <label for="latitude">Start Latitude</label>
+    <input type="text" id="latitude" name="latitude" onkeyup="changeVariable()"><br><br>
+    <label for="longitude">Start Longitude</label>
+    <input type="text" id="longitude" name="longitude"onkeyup="changeVariable2()"><br><br>
+    <label for="desLatitude">Destination Latitude</label>
+    <input type="text" id="desLatitude" name="desLatitude"onkeyup="changeVariable3()"><br><br>
+    <label for="desLongitude">Destination Longitude</label>
+    <input type="text" id="desLongitude" name="desLongitude"onkeyup="changeVariable4()"><br><br>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	
@@ -55,15 +63,25 @@ var LatLngDes
             .setContent("You clicked at the map at: " + e.latlng.toString())
             .openOn(mymap);
         LatLng = e.latlng
+       
+        document.getElementById("latitude").value = e.latlng.lat;
+        document.getElementById("longitude").value = e.latlng.lng;
+        
         firstClick = false}
         else{
         
+         
+
             firstClick = true
         popup
             .setLatLng(e.latlng)
             .setContent("Destination: " + e.latlng.toString())
             .openOn(mymap);
             LatLngDes = e.latlng
+
+            document.getElementById("desLatitude").value = e.latlng.lat;
+        document.getElementById("desLongitude").value = e.latlng.lng;
+           
         let url = `http://localhost:8080?lat=${LatLng.lat}&lng=${LatLng.lng}&latDes=${LatLngDes.lat}&lngDes=${LatLngDes.lng}`
         console.log(`Query: ${url}`)
         axios.post(url)
@@ -76,6 +94,42 @@ var LatLngDes
        
     
     }
+    }
+   
+
+
+
+    function send() {
+  
+       clearMap()
+      
+
+       popup
+            .setLatLng(LatLng)
+            .setContent("You set start to: " + LatLng.toString())
+            .openOn(mymap);
+       
+
+        popup
+            .setLatLng(LatLngDes)
+            .setContent("You set your destination to: " + LatLngDes.toString())
+            .openOn(mymap);
+        
+
+         
+           
+        let url = `http://localhost:8080?lat=${LatLng.lat}&lng=${LatLng.lng}&latDes=${LatLngDes.lat}&lngDes=${LatLngDes.lng}`
+        console.log(`Query: ${url}`)
+        axios.post(url)
+  .then((response) => {
+
+    console.log(response.data);
+ 
+    polyLine = L.polyline(response.data).addTo(mymap);
+  });
+       
+    
+    
     }
    
 
@@ -97,6 +151,27 @@ var LatLngDes
         }
     }
 }
+
+
+function changeVariable(){
+ 
+        LatLng.lat=document.getElementById("latitude").value;
+    }
+
+    function changeVariable2(){
+   
+        LatLng.lng=document.getElementById("longitude").value;
+    }
+    function changeVariable3(){
+  
+        LatLngDes.lat=document.getElementById("desLatitude").value;
+      
+    }
+    function changeVariable4(){
+   
+        LatLngDes.lng=document.getElementById("desLongitude").value;
+    }
+
 
 </script>
 
