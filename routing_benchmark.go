@@ -372,7 +372,7 @@ func main() {
 	println(t.String())
 
 	println("test")
-	for i := 0; i <= 10; i++ {
+	for i := 0; i <= 100; i++ {
 
 		var _, dis, _, _ = dijkstra_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
 
@@ -382,10 +382,10 @@ func main() {
 
 		if dis2[rnd[i][2]*len(result[0])+rnd[i][3]] > (dis[rnd[i][2]*len(result[0])+rnd[i][3]] + 0.1) {
 			println("error")
-			/*println(getCordsFromArrayPosition(result, rnd[i][0], rnd[i][1])[0])
-			println(getCordsFromArrayPosition(result, rnd[i][0], rnd[i][1])[1])
-			println(getCordsFromArrayPosition(result, rnd[i][2], rnd[i][3])[0])
-			println(getCordsFromArrayPosition(result, rnd[i][2], rnd[i][3])[1])*/
+			println(getCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[0])
+			println(getCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[1])
+			println(getCordsFromArrayPosition(len(result), len(result[0]), rnd[i][2], rnd[i][3])[0])
+			println(getCordsFromArrayPosition(len(result), len(result[0]), rnd[i][2], rnd[i][3])[1])
 		}
 		if dis3[rnd[i][2]*len(result[0])+rnd[i][3]] > dis[rnd[i][2]*len(result[0])+rnd[i][3]]+0.1 {
 			println("error2")

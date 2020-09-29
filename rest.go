@@ -85,23 +85,23 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 	var way [][2]int
 	if algorithm == "dijkstra" {
 		println("dijkstra")
-		way = getShortestPath2(desPos[0], desPos[1], preDij)
+		way = getShortestPath(desPos[0], desPos[1], preDij)
 		println(distancesDij[desPos[0]*len(result[0])+desPos[1]])
 	} else if algorithm == "astar" {
 		println("astern")
-		way = getShortestPath2(desPos[0], desPos[1], preAStar)
+		way = getShortestPath(desPos[0], desPos[1], preAStar)
 		println(distancesAStar[desPos[0]*len(result[0])+desPos[1]])
 	} else if algorithm == "dijkstraOpt" {
 		println("dijkstra opt")
-		way = getShortestPath2(desPos[0], desPos[1], preDijOpt)
+		way = getShortestPath(desPos[0], desPos[1], preDijOpt)
 		println(distancesDijOpt[desPos[0]*len(result[0])+desPos[1]])
 	} else if algorithm == "astarOpt" {
 		println("astar opt")
-		way = getShortestPath2(desPos[0], desPos[1], preAStarOpt)
+		way = getShortestPath(desPos[0], desPos[1], preAStarOpt)
 		println(distancesAStarOpt[desPos[0]*len(result[0])+desPos[1]])
 	} else if algorithm == "astarOptWithPre" {
 		println("astar opt with pre")
-		way = getShortestPath2(desPos[0], desPos[1], preAStarOptPre)
+		way = getShortestPath(desPos[0], desPos[1], preAStarOptPre)
 		println(distancesAStarOptPre[desPos[0]*len(result[0])+desPos[1]])
 	}
 
@@ -236,4 +236,21 @@ func insert(a [][2]int, index int, value [2]int) [][2]int {
 	a = append(a[:index+1], a[index:]...) // index < len(a)
 	a[index] = value
 	return a
+}
+
+func getShortestPath(desLat int, desLng int, pre [][]int) [][2]int {
+
+	var way [][2]int
+	way = append(way, [2]int{desLat, desLng})
+
+	var u [2]int = [2]int{desLat, desLng}
+
+	for pre[(u[0]*(len(result[0])) + u[1])][0] != -1 {
+
+		u = [2]int{pre[u[0]*(len(result[0]))+u[1]][0], pre[u[0]*(len(result[0]))+u[1]][1]}
+		way = append([][2]int{u}, way...)
+
+	}
+
+	return way
 }
