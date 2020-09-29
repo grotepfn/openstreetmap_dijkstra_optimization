@@ -1256,17 +1256,17 @@ func getShortestPath(desLat int, desLng int, pre [][][]int) [][]int {
 	return way
 }
 
-func getShortestPath2(desLat int, desLng int, pre [][]int) [][]int {
+func getShortestPath2(desLat int, desLng int, pre [][]int) [][2]int {
 
-	var way [][]int
-	way = append(way, []int{desLat, desLng})
+	var way [][2]int
+	way = append(way, [2]int{desLat, desLng})
 
-	var u []int = []int{desLat, desLng}
+	var u [2]int = [2]int{desLat, desLng}
 
 	for pre[(u[0]*(len(result[0])) + u[1])][0] != -1 {
 
-		u = []int{pre[u[0]*(len(result[0]))+u[1]][0], pre[u[0]*(len(result[0]))+u[1]][1]}
-		way = append([][]int{u}, way...)
+		u = [2]int{pre[u[0]*(len(result[0]))+u[1]][0], pre[u[0]*(len(result[0]))+u[1]][1]}
+		way = append([][2]int{u}, way...)
 
 	}
 
@@ -1823,6 +1823,7 @@ outer2:
 		//node within square and dest pos not within square
 
 		if !isOptimized && k != -1 && node[0] >= optEgdes[k][0][0] && node[1] >= optEgdes[k][0][1] && node[0] <= optEgdes[k][1][0] && node[1] <= optEgdes[k][1][1] && ((pos3 < optEgdes[k][0][0] || pos4 < optEgdes[k][0][1]) || (pos3 > optEgdes[k][1][0] || pos4 > optEgdes[k][1][1])) && (node[0] == optEgdes[k][0][0] || node[1] == optEgdes[k][0][1] || node[0] == optEgdes[k][1][0] || node[1] == optEgdes[k][1][1]) {
+			//println("hiiiii optimizing")
 			if !visitedSquares[k] {
 				optimizedAmount += (optEgdes[k][1][1] - optEgdes[k][0][1]) * (optEgdes[k][1][0] - optEgdes[k][0][0])
 			}
