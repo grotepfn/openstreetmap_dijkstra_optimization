@@ -53,59 +53,78 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 
 	var startPos = getArrayPositionFromCords(result, la, ln)
 
-	var pre, distances, _, pops = dijkstra_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
-	var pre2, distances3, _, pops3 = a_stern_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges)
-	var _, distances4, _, pops4 = dijkstra_single_optimized_old(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges)
-	var _, distances5, _, pops5 = a_stern_single_optimized_with_pre(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
+	var preDij, distancesDij, _, popsDij = dijkstra_single(startPos[0], startPos[1], desPos[0], desPos[1])
 
-	var _, distances2, _, pops2 = dijkstra_single(startPos[0], startPos[1], desPos[0], desPos[1])
+	//var preDijBi, distancesDijBi, _, popsDijBi = dijkstra_single(startPos[0], startPos[1], desPos[0], desPos[1])
+	var preDijOpt, distancesDijOpt, _, popsDijOpt = dijkstra_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
+	var preAStar, distancesAStar, _, popsAStar = a_stern_single(startPos[0], startPos[1], desPos[0], desPos[1])
+	var preAStarOpt, distancesAStarOpt, _, popsAStarOpt = a_stern_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges)
+	var preAStarOptPre, distancesAStarOptPre, _, popsAStarOptPre = a_stern_single_optimized_with_pre(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
 
-	println("opti")
-	println(distances[desPos[0]*len(result[0])+desPos[1]])
-	println(pops)
+	println("ergebnisse")
+	println("dijkstra single")
+	println(distancesDij[desPos[0]*len(result[0])+desPos[1]])
+	println(popsDij)
 
-	println("opti")
-	println(distances3[desPos[0]*len(result[0])+desPos[1]])
-	println(pops3)
+	println("dijkstra single optimized")
+	println(distancesDijOpt[desPos[0]*len(result[0])+desPos[1]])
+	println(popsDijOpt)
 
-	println("opti")
-	println(distances4[desPos[0]*len(result[0])+desPos[1]])
-	println(pops4)
+	println("a star single")
+	println(distancesAStar[desPos[0]*len(result[0])+desPos[1]])
+	println(popsAStar)
 
-	println("opti")
-	println(distances5[desPos[0]*len(result[0])+desPos[1]])
-	println(pops5)
+	println("a star single opt without pre")
+	println(distancesAStarOpt[desPos[0]*len(result[0])+desPos[1]])
+	println(popsAStarOpt)
 
-	println("slow")
-	println(distances2[desPos[0]*len(result[0])+desPos[1]])
-	println(pops2)
+	println("a star single opt with pre")
+	println(distancesAStarOptPre[desPos[0]*len(result[0])+desPos[1]])
+	println(popsAStarOptPre)
 
 	var way [][2]int
 	if algorithm == "dijkstra" {
 		println("dijkstra")
-		way = getShortestPath2(desPos[0], desPos[1], pre)
+		way = getShortestPath2(desPos[0], desPos[1], preDij)
+		println(distancesDij[desPos[0]*len(result[0])+desPos[1]])
 	} else if algorithm == "astar" {
 		println("astern")
-		way = getShortestPath2(desPos[0], desPos[1], pre2)
+		way = getShortestPath2(desPos[0], desPos[1], preAStar)
+		println(distancesAStar[desPos[0]*len(result[0])+desPos[1]])
+	} else if algorithm == "dijkstraOpt" {
+		println("dijkstra opt")
+		way = getShortestPath2(desPos[0], desPos[1], preDijOpt)
+		println(distancesDijOpt[desPos[0]*len(result[0])+desPos[1]])
+	} else if algorithm == "astarOpt" {
+		println("astar opt")
+		way = getShortestPath2(desPos[0], desPos[1], preAStarOpt)
+		println(distancesAStarOpt[desPos[0]*len(result[0])+desPos[1]])
+	} else if algorithm == "astarOptWithPre" {
+		println("astar opt with pre")
+		way = getShortestPath2(desPos[0], desPos[1], preAStarOptPre)
+		println(distancesAStarOptPre[desPos[0]*len(result[0])+desPos[1]])
 	}
 
-	var divided = true
-	for divided {
-		divided = false
-		for i := 0; i <= len(way)-2; i = i + 2 {
+	/*
 
-			if math.Abs(float64(way[i][0]-way[i+1][0])) >= 2 || math.Abs(float64(way[i][1]-way[i+1][1])) >= 2 {
-				divided = true
+		var divided = true
+		for divided {
+			divided = false
 
-				var midPoint = getMidPoint(way[i][0], way[i][1], way[i+1][0], way[i+1][1])
+			for i := 0; i <= len(way)-2; i = i + 1 {
 
-				way = insert(way, i+1, midPoint)
+				if math.Abs(float64(way[i][0]-way[i+1][0])) > 2 || math.Abs(float64(way[i][1]-way[i+1][1])) > 2 {
+					divided = true
+
+					var midPoint = getMidPoint(way[i][0], way[i][1], way[i+1][0], way[i+1][1])
+
+					way = insert(way, i+1, midPoint)
+					break
+				}
 
 			}
-
-		}
-	}
-	//println(len(way))
+		}*/
+	println("found a way")
 
 	var wayCords [][2]float64
 	for i := 0; i <= len(way)-1; i++ {
@@ -117,9 +136,6 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Println(err)
-		log.Println(distances)
-
-		log.Println(pre)
 
 	}
 
