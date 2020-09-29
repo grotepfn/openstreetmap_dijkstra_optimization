@@ -49,9 +49,9 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 		log.Println(error4)
 	}
 
-	var desPos = getArrayPositionFromCords(result, laDes, lnDes)
+	var desPos = getArrayPositionFromCords(len(result), len(result[0]), laDes, lnDes)
 
-	var startPos = getArrayPositionFromCords(result, la, ln)
+	var startPos = getArrayPositionFromCords(len(result), len(result[0]), la, ln)
 
 	var preDij, distancesDij, _, popsDij = dijkstra_single(startPos[0], startPos[1], desPos[0], desPos[1])
 
@@ -129,7 +129,7 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 	var wayCords [][2]float64
 	for i := 0; i <= len(way)-1; i++ {
 
-		wayCords = append(wayCords, getCordsFromArrayPosition(result, way[i][0], way[i][1]))
+		wayCords = append(wayCords, getCordsFromArrayPosition(len(result), len(result[0]), way[i][0], way[i][1]))
 	}
 
 	var payload, err = json.Marshal(wayCords)
@@ -209,10 +209,10 @@ func main() {
 //https://de.mathworks.com/matlabcentral/answers/229312-how-to-calculate-the-middle-point-between-two-points-on-the-earth-in-matlab
 func getMidPoint(lat1, lng1, lat2, lng2 int) [2]int {
 
-	var l = getCordsFromArrayPosition(result, lat1, lng1)
+	var l = getCordsFromArrayPosition(len(result), len(result[0]), lat1, lng1)
 	var la = l[0]
 	var ln = l[1]
-	l = getCordsFromArrayPosition(result, lat2, lng2)
+	l = getCordsFromArrayPosition(len(result), len(result[0]), lat2, lng2)
 	var la2 = l[0]
 	var ln2 = l[1]
 
@@ -223,7 +223,7 @@ func getMidPoint(lat1, lng1, lat2, lng2 int) [2]int {
 
 	var lonMid = ln + (180/math.Pi)*math.Atan2(By, math.Cos(la*(math.Pi/180.0))+Bx)
 
-	return getArrayPositionFromCords(result, latMid, lonMid)
+	return getArrayPositionFromCords(len(result), len(result[0]), latMid, lonMid)
 
 }
 

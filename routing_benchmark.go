@@ -48,9 +48,9 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 		log.Println(error4)
 	}
 
-	var desPos = getArrayPositionFromCords(result, laDes, lnDes)
+	var desPos = getArrayPositionFromCords(len(result), len(result[0]), laDes, lnDes)
 
-	var startPos = getArrayPositionFromCords(result, la, ln)
+	var startPos = getArrayPositionFromCords(len(result), len(result[0]), la, ln)
 
 	var _, distances, _, pops = dijkstra_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
 	var _, distances3, _, pops3 = a_stern_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges)
@@ -114,7 +114,7 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 	var wayCords [][2]float64
 	for i := 0; i <= len(way)-1; i++ {
 
-		wayCords = append(wayCords, getCordsFromArrayPosition(result, way[i][0], way[i][1]))
+		wayCords = append(wayCords, getCordsFromArrayPosition(len(result), len(result[0]), way[i][0], way[i][1]))
 	}
 
 	var payload, err = json.Marshal(wayCords)
@@ -248,7 +248,7 @@ func main() {
 	println(t.String())
 	counterPOPS = 0
 
-	for i := 0; i <= 10; i++ {
+	for i := 0; i <= -1; i++ {
 		//println("sdfsdfs")
 		var _, _, _, counter = dijkstra_single_optimized(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
 
@@ -279,9 +279,9 @@ func main() {
 	t = time.Now()
 	println(t.String())
 	counterPOPS = 0
-	for i := 0; i <= 100; i++ {
+	for i := 0; i <= -1; i++ {
 
-		var _, _, _, counter = a_stern_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares)
+		var _, _, _, counter = a_stern_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
 		counterPOPS = counterPOPS + counter
 
 	}
@@ -296,7 +296,7 @@ func main() {
 	println(t.String())
 	counterPOPS = 0
 
-	for i := 0; i <= 100; i++ {
+	for i := 0; i <= -1; i++ {
 
 		var _, _, _, counter = a_stern_single_optimized(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
 		counterPOPS = counterPOPS + counter
@@ -310,7 +310,7 @@ func main() {
 	println(t.String())
 	counterPOPS = 0
 
-	for i := 0; i <= 100; i++ {
+	for i := 0; i <= -1; i++ {
 
 		var _, _, _, counter = a_stern_single_optimized_with_pre(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
 		counterPOPS = counterPOPS + counter
@@ -357,7 +357,7 @@ func main() {
 
 	for i := 0; i <= -1; i++ {
 
-		var _, dists, _, counter = a_stern_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares)
+		var _, dists, _, counter = a_stern_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
 		counterPOPS = counterPOPS + counter
 
 		var _, dists2, _, _ = a_stern_single_optimized(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
@@ -372,28 +372,23 @@ func main() {
 	println(t.String())
 
 	println("test")
-	for i := 0; i <= 100; i++ {
+	for i := 0; i <= 10; i++ {
 
-		t = time.Now()
-		println(t.String())
-		var pre, _, _, _ = dijkstra_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
-		t = time.Now()
-		println(t.String())
+		var _, dis, _, _ = dijkstra_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
 
-		t = time.Now()
-		println(t.String())
-		var pre2, _, _, _ = a_stern_single_optimized_with_pre(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
+		var _, dis2, _, _ = a_stern_single_optimized_with_pre(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
 
-		t = time.Now()
-		println(t.String())
-		var ways = getShortestPath2(rnd[i][0], rnd[i][1], pre)
-		var ways2 = getShortestPath2(rnd[i][0], rnd[i][1], pre2)
+		var _, dis3, _, _ = a_stern_single_optimized(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
 
-		println(ways[int(float64(len(ways))*0.5)][0])
-		println(ways2[int(float64(len(ways2))*0.5)][0])
-
-		if len(ways) != len(ways2) {
-			println("ja")
+		if dis2[rnd[i][2]*len(result[0])+rnd[i][3]] > (dis[rnd[i][2]*len(result[0])+rnd[i][3]] + 0.1) {
+			println("error")
+			/*println(getCordsFromArrayPosition(result, rnd[i][0], rnd[i][1])[0])
+			println(getCordsFromArrayPosition(result, rnd[i][0], rnd[i][1])[1])
+			println(getCordsFromArrayPosition(result, rnd[i][2], rnd[i][3])[0])
+			println(getCordsFromArrayPosition(result, rnd[i][2], rnd[i][3])[1])*/
+		}
+		if dis3[rnd[i][2]*len(result[0])+rnd[i][3]] > dis[rnd[i][2]*len(result[0])+rnd[i][3]]+0.1 {
+			println("error2")
 		}
 	}
 

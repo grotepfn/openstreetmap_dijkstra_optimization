@@ -24,18 +24,13 @@ var pointInPolygon [][2]float64
 var pointInWater GeoPoint
 var pointInWater2 GeoPoint
 
-var bitArray [500][1000]bool
+var bitArray [50][100]bool
 
 var boundingBox [][4]float64
 
 var preRotateBitArray [len(bitArray[0]) * len(bitArray)]float64
 var lock = sync.RWMutex{}
 var mapPreCalcPoly = make(map[[2]float64]float64)
-
-type GeoPoint struct {
-	lat float64
-	lng float64
-}
 
 func main() {
 	println("numcpus " + strconv.Itoa(runtime.NumCPU()))
@@ -49,7 +44,7 @@ func main() {
 
 	println("starting at " + t.String())
 
-	f, err := os.Open("data/planet-coastlines.pbf")
+	f, err := os.Open("data/antarctica-latest.osm.pbf")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -274,7 +269,7 @@ func isCrossing(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
 	var A2 = 0.0
 	var ln = 0.0
 	if (P2 - B2) < -180 {
-		ln = modLikePython((P2 - B2), 180.0)
+		ln = modLikePythonFloat((P2 - B2), 180.0)
 	} else if (P2 - B2) > 180 {
 		ln = -180 + (P2 - B2 - 180)
 	} else {
@@ -283,7 +278,7 @@ func isCrossing(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
 
 	P2 = ln
 	if (A2 - B2) < -180 {
-		ln = modLikePython((A2 - B2), 180.0)
+		ln = modLikePythonFloat((A2 - B2), 180.0)
 	} else if (A2 - B2) > 180 {
 		ln = -180 + (A2 - B2 - 180)
 	} else {
@@ -291,7 +286,7 @@ func isCrossing(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
 	}
 
 	if (X2 - B2) < -180 {
-		ln = modLikePython((X2 - B2), 180.0)
+		ln = modLikePythonFloat((X2 - B2), 180.0)
 	} else if (X2 - B2) > 180 {
 		ln = -180 + (X2 - B2 - 180)
 	} else {
@@ -315,7 +310,8 @@ func azimuthMiddle(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint, c bool) bool 
 	var P2 float64
 	P2 = P.lng
 	if c {
-		var da = getArrayPositionFromCords(P.lat, P.lng)
+
+		var da = getArrayPositionFromCords(len(bitArray), len(bitArray[0]), P.lat, P.lng)
 		P2 = preRotateBitArray[da[0]*len(bitArray[0])+da[1]]
 		//P2 = rotateLng(P, X)
 	}
@@ -336,7 +332,7 @@ func azimuthMiddle(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint, c bool) bool 
 
 	var ln = 0.0
 	if (P2 - B2) < -180 {
-		ln = modLikePython((P2 - B2), 180.0)
+		ln = modLikePythonFloat((P2 - B2), 180.0)
 	} else if (P2 - B2) > 180 {
 		ln = -180 + (P2 - B2 - 180)
 	} else {
@@ -346,7 +342,7 @@ func azimuthMiddle(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint, c bool) bool 
 	P2 = ln
 
 	if (A2 - B2) < -180 {
-		ln = modLikePython((A2 - B2), 180.0)
+		ln = modLikePythonFloat((A2 - B2), 180.0)
 	} else if (A2 - B2) > 180 {
 		ln = -180 + (A2 - B2 - 180)
 	} else {
@@ -458,7 +454,7 @@ func fillBitArray() {
 			defer wg.Done()
 			for j := 0; j <= len(bitArray[i])-1; j++ {
 
-				var bla = getCordsFromArrayPosition(i, j)
+				var bla = getCordsFromArrayPosition(len(bitArray), len(bitArray[0]), i, j)
 				var x = GeoPoint{bla[0], bla[1]}
 				bitArray[i][j] = isPointInWater(x)
 
@@ -468,8 +464,8 @@ func fillBitArray() {
 	}
 	wg.Wait()
 
-	for i := 0; i <= len(bitArray)-1; i = i + 10 {
-		for j := 0; j <= len(bitArray[i])-1; j = j + 10 {
+	for i := 0; i <= len(bitArray)-1; i = i + 1 {
+		for j := 0; j <= len(bitArray[i])-1; j = j + 1 {
 
 			if bitArray[i][j] {
 				print(" ")
@@ -482,15 +478,6 @@ func fillBitArray() {
 	}
 }
 
-//https://stackoverflow.com/questions/43018206/modulo-of-negative-integers-in-go
-func modLikePython(d, m float64) float64 {
-	var res float64 = math.Mod(d, m)
-	if (res < 0 && m > 0) || (res > 0 && m < 0) {
-		return res + m
-	}
-	return res
-}
-
 func fillRotMap() {
 
 	var wg sync.WaitGroup
@@ -501,7 +488,7 @@ func fillRotMap() {
 			defer wg.Done()
 			for j := 0; j <= len(bitArray[0])-1; j++ {
 
-				var x = getCordsFromArrayPosition(i, j)
+				var x = getCordsFromArrayPosition(len(bitArray), len(bitArray[0]), i, j)
 				var z = rotateLng(GeoPoint{x[0], x[1]}, pointInWater2)
 				preRotateBitArray[i*len(bitArray[0])+j] = z
 			}
@@ -530,18 +517,4 @@ func fillRotMap2() {
 
 	}
 	wg.Wait()
-}
-
-//lat lng
-func getCordsFromArrayPosition(pos1 int, pos2 int) [2]float64 {
-
-	return [2]float64{90 - (float64(pos1) / float64(len(bitArray)) * 180), -180 + 360*(float64(pos2)/float64(len(bitArray[0])))}
-
-}
-
-//lat lng
-func getArrayPositionFromCords(lat float64, lng float64) [2]int {
-
-	return [2]int{int(math.Round((lat - 90) / 180 * float64(len(bitArray)) * -1)), int(math.Round((lng + 180) / 360 * float64(len(bitArray[0])-1)))}
-
 }

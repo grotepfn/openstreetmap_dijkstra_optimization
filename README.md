@@ -10,7 +10,7 @@ go run coastlines.go
 
 Create routable shortcut squares within the bitarray with help of optimization.go.
 ```bash
-go run optimization.go
+o run .\optimization.go .\bitarrayOperations.go
 ```
 This go program produces a three dimensional array with the optimization squares and 
 saves it to the file optimization_squares.
@@ -30,5 +30,5 @@ Open the index.html with a webbrowser to use the application.
 
 Run the benchmark comparing different routing algorithms with 
 ```bash
-go run routing_benchmark.go dijkstra.go
+go run routing_benchmark.go dijkstra.go bitarrayOperations
 ```

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"math"
 	"os"
 )
 
@@ -41,7 +40,7 @@ func main() {
 			for xAxis := sq[k][0][1]; xAxis <= sq[k][1][1]; xAxis++ {
 
 				//upper line
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, sq[k][0][0], x), getCordsFromArrayPosition(result, sq[k][0][0], xAxis))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], x), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], xAxis))
 
 				var l = help
 				l = append(l, distance)
@@ -53,7 +52,7 @@ func main() {
 
 				//lower line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, sq[k][0][0], x), getCordsFromArrayPosition(result, sq[k][1][0], xAxis))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], x), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], xAxis))
 
 				var l = help
 				l = append(l, distance)
@@ -67,7 +66,7 @@ func main() {
 
 				//left line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, sq[k][0][0], x), getCordsFromArrayPosition(result, yAxis, sq[k][0][1]))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], x), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][0][1]))
 
 				var l = help
 				l = append(l, distance)
@@ -78,7 +77,7 @@ func main() {
 			for yAxis := sq[k][0][0]; yAxis <= sq[k][1][0]; yAxis++ {
 				//right line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, sq[k][0][0], x), getCordsFromArrayPosition(result, yAxis, sq[k][1][1]))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], x), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][1][1]))
 
 				var l = help
 				l = append(l, distance)
@@ -95,7 +94,7 @@ func main() {
 			for xAxis := sq[k][0][1]; xAxis <= sq[k][1][1]; xAxis++ {
 
 				//upper line
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, sq[k][1][0], x2), getCordsFromArrayPosition(result, sq[k][0][0], xAxis))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], x2), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], xAxis))
 
 				var l = help
 				l = append(l, distance)
@@ -105,7 +104,7 @@ func main() {
 			for xAxis := sq[k][0][1]; xAxis <= sq[k][1][1]; xAxis++ {
 				//lower line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, sq[k][1][0], x2), getCordsFromArrayPosition(result, sq[k][1][0], xAxis))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], x2), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], xAxis))
 
 				var l = help
 				l = append(l, distance)
@@ -118,7 +117,7 @@ func main() {
 
 				//left line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, sq[k][1][0], x2), getCordsFromArrayPosition(result, yAxis, sq[k][0][1]))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], x2), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][0][1]))
 
 				var l = help
 				l = append(l, distance)
@@ -129,7 +128,7 @@ func main() {
 			for yAxis := sq[k][0][0]; yAxis <= sq[k][1][0]; yAxis++ {
 				//right line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, sq[k][1][0], x2), getCordsFromArrayPosition(result, yAxis, sq[k][1][1]))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], x2), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][1][1]))
 
 				var l = help
 				l = append(l, distance)
@@ -145,7 +144,7 @@ func main() {
 			for xAxis := sq[k][0][1]; xAxis <= sq[k][1][1]; xAxis++ {
 
 				//upper line
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, y, sq[k][0][1]), getCordsFromArrayPosition(result, sq[k][0][0], xAxis))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y, sq[k][0][1]), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], xAxis))
 
 				var l = help
 				l = append(l, distance)
@@ -155,7 +154,7 @@ func main() {
 
 				//lower line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, y, sq[k][0][1]), getCordsFromArrayPosition(result, sq[k][1][0], xAxis))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y, sq[k][0][1]), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], xAxis))
 				var l = help
 				l = append(l, distance)
 
@@ -168,7 +167,7 @@ func main() {
 
 				//left line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, y, sq[k][0][1]), getCordsFromArrayPosition(result, yAxis, sq[k][0][1]))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y, sq[k][0][1]), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][0][1]))
 
 				var l = help
 				l = append(l, distance)
@@ -179,7 +178,7 @@ func main() {
 
 				//right line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, y, sq[k][0][1]), getCordsFromArrayPosition(result, yAxis, sq[k][1][1]))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y, sq[k][0][1]), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][1][1]))
 				var l = help
 				l = append(l, distance)
 
@@ -193,7 +192,7 @@ func main() {
 			for xAxis := sq[k][0][1]; xAxis <= sq[k][1][1]; xAxis++ {
 
 				//upper line
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, y2, sq[k][1][1]), getCordsFromArrayPosition(result, sq[k][0][0], xAxis))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y2, sq[k][1][1]), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], xAxis))
 
 				var l = help
 				l = append(l, distance)
@@ -204,7 +203,7 @@ func main() {
 			for xAxis := sq[k][0][1]; xAxis <= sq[k][1][1]; xAxis++ {
 				//lower line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, y2, sq[k][1][1]), getCordsFromArrayPosition(result, sq[k][1][0], xAxis))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y2, sq[k][1][1]), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], xAxis))
 
 				var l = help
 				l = append(l, distance)
@@ -218,7 +217,7 @@ func main() {
 
 				//left line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, y2, sq[k][1][1]), getCordsFromArrayPosition(result, yAxis, sq[k][0][1]))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y2, sq[k][1][1]), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][0][1]))
 				var l = help
 				l = append(l, distance)
 
@@ -228,7 +227,7 @@ func main() {
 
 				//right line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, y2, sq[k][1][1]), getCordsFromArrayPosition(result, yAxis, sq[k][1][1]))
+				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y2, sq[k][1][1]), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][1][1]))
 				var l = help
 				l = append(l, distance)
 
@@ -379,47 +378,3 @@ func findBiggestSquare2(i, j int, s [][2][2]int) int {
 
 	return k - 3
 }
-
-///
-
-//lat lng
-func getCordsFromArrayPosition(result [][]bool, pos1 int, pos2 int) [2]float64 {
-
-	return [2]float64{90 - (float64(pos1) / float64(len(result)) * 180), -180 + 360*(float64(pos2)/float64(len(result[0])))}
-
-}
-
-//lat lng
-func getArrayPositionFromCords(result [][]bool, lat float64, lng float64) [2]int {
-
-	return [2]int{int(math.Round((lat - 90) / 180 * float64(len(result)) * -1)), int(math.Round((lng + 180) / 360 * float64(len(result[0])-1)))}
-
-}
-
-//https://github.com/kellydunn/golang-geo/blob/master/point.go
-// GreatCircleDistance: Calculates the Haversine distance between two points in kilometers.
-// Original Implementation from: http://www.movable-type.co.uk/scripts/latlong.html
-func GreatCircleDistance(l1 [2]float64, l2 [2]float64) float64 {
-	var EARTH_RADIUS = 6371.0
-	dLat := (l2[0] - l1[0]) * (math.Pi / 180.0)
-	dLon := (l2[1] - l1[1]) * (math.Pi / 180.0)
-
-	lat1 := l1[0] * (math.Pi / 180.0)
-	lat2 := l2[0] * (math.Pi / 180.0)
-
-	a1 := math.Sin(dLat/2) * math.Sin(dLat/2)
-	a2 := math.Sin(dLon/2) * math.Sin(dLon/2) * math.Cos(lat1) * math.Cos(lat2)
-
-	a := a1 + a2
-
-	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
-
-	return EARTH_RADIUS * c
-}
-
-type GeoPoint struct {
-	lat float64
-	lng float64
-}
-
-////
