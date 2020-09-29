@@ -905,7 +905,7 @@ func a_stern_single(pos1, pos2, pos3, pos4 int) ([][]int, []float64, [2]int, int
 
 }
 
-func a_stern_bi(pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int][]int) ([][]int, []float64, [][]int, []float64, [2]int, int) {
+func dijkstra_bi(pos1, pos2, pos3, pos4 int) ([][]int, []float64, [][]int, []float64, [2]int, int) {
 
 	var counterPOPS = 0
 
@@ -949,7 +949,7 @@ func a_stern_bi(pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int][]int) ([
 				// Insert a new item and then modify its priority.
 				item := &Item{
 					pos:      [2]int{pos1, pos2},
-					distance: -GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), pos1, pos2), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4)),
+					distance: 0,
 				}
 				heap.Push(&pq, item)
 
@@ -959,7 +959,7 @@ func a_stern_bi(pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int][]int) ([
 				// Insert a new item and then modify its priority.
 				item := &Item{
 					pos:      [2]int{pos3, pos4},
-					distance: -GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4), getCordsFromArrayPosition(len(result), len(result[0]), pos1, pos2)),
+					distance: 0,
 				}
 				heap.Push(&pq2, item)
 
@@ -998,7 +998,7 @@ func a_stern_bi(pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int][]int) ([
 
 				if alt < distances[neighbours[k][0]*len(result[0])+neighbours[k][1]] && !found {
 
-					newItem := &Item{pos: neighbours[k], distance: -alt - GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))}
+					newItem := &Item{pos: neighbours[k], distance: -alt}
 					pre[neighbours[k][0]*len(result[0])+neighbours[k][1]] = []int{node[0], node[1]}
 					distances[neighbours[k][0]*len(result[0])+neighbours[k][1]] = alt
 
@@ -1030,7 +1030,7 @@ func a_stern_bi(pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int][]int) ([
 
 				if alt < distances2[neighbours[k][0]*len(result[0])+neighbours[k][1]] && !found {
 
-					newItem := &Item{pos: neighbours[k], distance: -alt - GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]), getCordsFromArrayPosition(len(result), len(result[0]), pos1, pos2))}
+					newItem := &Item{pos: neighbours[k], distance: -alt}
 					pre2[neighbours[k][0]*len(result[0])+neighbours[k][1]] = []int{node2[0], node2[1]}
 					distances2[neighbours[k][0]*len(result[0])+neighbours[k][1]] = alt
 

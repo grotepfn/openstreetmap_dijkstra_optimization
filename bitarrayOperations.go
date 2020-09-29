@@ -59,3 +59,20 @@ func GreatCircleDistance(l1 [2]float64, l2 [2]float64) float64 {
 
 	return EARTH_RADIUS * c
 }
+
+func getShortestPath(desLat int, desLng int, pre [][]int) [][2]int {
+
+	var way [][2]int
+	way = append(way, [2]int{desLat, desLng})
+
+	var u [2]int = [2]int{desLat, desLng}
+
+	for pre[(u[0]*(len(result[0])) + u[1])][0] != -1 {
+
+		u = [2]int{pre[u[0]*(len(result[0]))+u[1]][0], pre[u[0]*(len(result[0]))+u[1]][1]}
+		way = append([][2]int{u}, way...)
+
+	}
+
+	return way
+}

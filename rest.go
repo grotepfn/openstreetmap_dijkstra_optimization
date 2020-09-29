@@ -55,7 +55,7 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 
 	var preDij, distancesDij, _, popsDij = dijkstra_single(startPos[0], startPos[1], desPos[0], desPos[1])
 
-	//var preDijBi, distancesDijBi, _, popsDijBi = dijkstra_single(startPos[0], startPos[1], desPos[0], desPos[1])
+	var preDijBi, distancesDijBi, preDijBi2, distancesDijBi2, bestMeetingPoint, popsDijBi = dijkstra_bi(startPos[0], startPos[1], desPos[0], desPos[1])
 	var preDijOpt, distancesDijOpt, _, popsDijOpt = dijkstra_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
 	var preAStar, distancesAStar, _, popsAStar = a_stern_single(startPos[0], startPos[1], desPos[0], desPos[1])
 	var preAStarOpt, distancesAStarOpt, _, popsAStarOpt = a_stern_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges)
@@ -66,8 +66,12 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 	println(distancesDij[desPos[0]*len(result[0])+desPos[1]])
 	println(popsDij)
 
+	println("dijkstra bi")
+	println(distancesDijBi[bestMeetingPoint[0]*len(result[0])+bestMeetingPoint[1]] + distancesDijBi2[bestMeetingPoint[0]*len(result[0])+bestMeetingPoint[1]])
+	println(popsDijBi)
+
 	println("dijkstra single optimized")
-	println(distancesDijOpt[desPos[0]*len(result[0])+desPos[1]])
+	println(distancesDijOpt[bestMeetingPoint[0]*len(result[0])+bestMeetingPoint[1]] + distancesDijOpt[bestMeetingPoint[0]*len(result[0])+bestMeetingPoint[1]])
 	println(popsDijOpt)
 
 	println("a star single")
@@ -103,6 +107,28 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 		println("astar opt with pre")
 		way = getShortestPath(desPos[0], desPos[1], preAStarOptPre)
 		println(distancesAStarOptPre[desPos[0]*len(result[0])+desPos[1]])
+	} else if algorithm == "biDijkstra" {
+		println("dijkstra bi")
+		var wayCords [][2]float64
+
+		way = getShortestPath(bestMeetingPoint[0], bestMeetingPoint[1], preDijBi)
+
+		for i := 0; i <= len(way)-1; i++ {
+
+			wayCords = append(wayCords, getCordsFromArrayPosition(len(result), len(result[0]), way[i][0], way[i][1]))
+		}
+
+		var way2 = getShortestPath(bestMeetingPoint[0], bestMeetingPoint[1], preDijBi2)
+
+		//https://stackoverflow.com/questions/19239449/how-do-i-reverse-an-array-in-go
+		for i, j := 0, len(way2)-1; i < j; i, j = i+1, j-1 {
+			way2[i], way2[j] = way2[j], way2[i]
+		}
+
+		//wayCords2 = wayCords2[1:]
+
+		way = append(way, way2...)
+
 	}
 
 	/*
@@ -236,21 +262,4 @@ func insert(a [][2]int, index int, value [2]int) [][2]int {
 	a = append(a[:index+1], a[index:]...) // index < len(a)
 	a[index] = value
 	return a
-}
-
-func getShortestPath(desLat int, desLng int, pre [][]int) [][2]int {
-
-	var way [][2]int
-	way = append(way, [2]int{desLat, desLng})
-
-	var u [2]int = [2]int{desLat, desLng}
-
-	for pre[(u[0]*(len(result[0])) + u[1])][0] != -1 {
-
-		u = [2]int{pre[u[0]*(len(result[0]))+u[1]][0], pre[u[0]*(len(result[0]))+u[1]][1]}
-		way = append([][2]int{u}, way...)
-
-	}
-
-	return way
 }

@@ -110,7 +110,7 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 
 		wayCords = append(wayCords, wayCords2...)
 	*/
-	var way = getShortestPath2(desPos[0], desPos[1], pre)
+	var way = getShortestPath(desPos[0], desPos[1], pre)
 	var wayCords [][2]float64
 	for i := 0; i <= len(way)-1; i++ {
 
@@ -190,18 +190,34 @@ func main() {
 
 	}
 
-	println("single")
+	println("dij single")
 	t := time.Now()
 	println(t.String())
 	var counterPOPS = 0
 
 	for i := 0; i <= 100; i++ {
 
-		//	var _, _, _, counter = dijkstra_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
-		//	counterPOPS = counterPOPS + counter
+		var _, _, _, counter = dijkstra_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
+		counterPOPS = counterPOPS + counter
 
 	}
 	println("dijkstra single pops")
+	println(counterPOPS)
+	t = time.Now()
+	println(t.String())
+
+	println("dij bi")
+	t = time.Now()
+	println(t.String())
+	counterPOPS = 0
+
+	for i := 0; i <= 100; i++ {
+
+		var _, _, _, _, _, counter = dijkstra_bi(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
+		counterPOPS = counterPOPS + counter
+
+	}
+	println("dijkstra bi pops")
 	println(counterPOPS)
 	t = time.Now()
 	println(t.String())
