@@ -126,7 +126,7 @@ func main() {
 	println(t.String())
 	counterPOPS = 0
 
-	for i := 0; i <= 100; i++ {
+	for i := 0; i <= -100; i++ {
 
 		var _, _, _, _, _, counter = dijkstra_bi(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
 		counterPOPS = counterPOPS + counter
@@ -179,7 +179,7 @@ func main() {
 	println(t.String())
 	counterPOPS = 0
 
-	for i := 0; i <= 100; i++ {
+	for i := 0; i <= -100; i++ {
 		//println("sdfsdfs")
 		var _, _, _, counter = dijkstra_single_optimized(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
 
