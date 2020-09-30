@@ -134,7 +134,7 @@ func dijkstra_single(pos1, pos2, pos3, pos4 int) ([][]int, []float64, [2]int, in
 		}
 
 		if node[0] == pos3 && node[1] == pos4 {
-			println("hi")
+
 			for i := 0; i <= len(result)-1; i = i + 10 {
 				for j := 0; j <= len(result[i])-1; j = j + 10 {
 
