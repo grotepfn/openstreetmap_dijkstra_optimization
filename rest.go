@@ -131,31 +131,30 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	/*
-
-		var divided = true
-		for divided {
-			divided = false
-
-			for i := 0; i <= len(way)-2; i = i + 1 {
-
-				if math.Abs(float64(way[i][0]-way[i+1][0])) > 2 || math.Abs(float64(way[i][1]-way[i+1][1])) > 2 {
-					divided = true
-
-					var midPoint = getMidPoint(way[i][0], way[i][1], way[i+1][0], way[i+1][1])
-
-					way = insert(way, i+1, midPoint)
-					break
-				}
-
-			}
-		}*/
 	println("found a way")
 
 	var wayCords [][2]float64
 	for i := 0; i <= len(way)-1; i++ {
 
 		wayCords = append(wayCords, getCordsFromArrayPosition(len(result), len(result[0]), way[i][0], way[i][1]))
+	}
+
+	var divided = true
+	for divided {
+		divided = false
+
+		for i := 0; i <= len(wayCords)-2; i = i + 1 {
+
+			if GreatCircleDistance(wayCords[i], wayCords[i+1]) > 1 {
+				divided = true
+
+				var midPoint = getMidPoint(wayCords[i][0], wayCords[i][1], wayCords[i+1][0], wayCords[i+1][1])
+
+				wayCords = insert(wayCords, i+1, midPoint)
+				break
+			}
+
+		}
 	}
 
 	var payload, err = json.Marshal(wayCords)
@@ -233,29 +232,22 @@ func main() {
 }
 
 //https://de.mathworks.com/matlabcentral/answers/229312-how-to-calculate-the-middle-point-between-two-points-on-the-earth-in-matlab
-func getMidPoint(lat1, lng1, lat2, lng2 int) [2]int {
+func getMidPoint(lat1, lng1, lat2, lng2 float64) [2]float64 {
 
-	var l = getCordsFromArrayPosition(len(result), len(result[0]), lat1, lng1)
-	var la = l[0]
-	var ln = l[1]
-	l = getCordsFromArrayPosition(len(result), len(result[0]), lat2, lng2)
-	var la2 = l[0]
-	var ln2 = l[1]
+	var Bx = math.Cos(lat2*(math.Pi/180.0)) * math.Cos((lng2-lng1)*(math.Pi/180.0))
+	var By = math.Cos(lat2*(math.Pi/180.0)) * math.Sin((lng2-lng1)*(math.Pi/180.0))
 
-	var Bx = math.Cos(la2*(math.Pi/180.0)) * math.Cos((ln2-ln)*(math.Pi/180.0))
-	var By = math.Cos(la2*(math.Pi/180.0)) * math.Sin((ln2-ln)*(math.Pi/180.0))
+	var latMid = (180 / math.Pi) * math.Atan2(math.Sin(lat1*(math.Pi/180.0))+math.Sin(lat2*(math.Pi/180.0)), math.Sqrt((math.Cos(lat1*(math.Pi/180.0))+Bx)*(math.Cos(lat1*(math.Pi/180.0))+Bx)+By*By))
 
-	var latMid = (180 / math.Pi) * math.Atan2(math.Sin(la*(math.Pi/180.0))+math.Sin(la2*(math.Pi/180.0)), math.Sqrt((math.Cos(la*(math.Pi/180.0))+Bx)*(math.Cos(la*(math.Pi/180.0))+Bx)+By*By))
+	var lonMid = lng1 + (180/math.Pi)*math.Atan2(By, math.Cos(lat1*(math.Pi/180.0))+Bx)
 
-	var lonMid = ln + (180/math.Pi)*math.Atan2(By, math.Cos(la*(math.Pi/180.0))+Bx)
-
-	return getArrayPositionFromCords(len(result), len(result[0]), latMid, lonMid)
+	return [2]float64{latMid, lonMid}
 
 }
 
 //https://stackoverflow.com/questions/46128016/insert-a-value-in-a-slice-at-a-given-index
 // 0 <= index <= len(a)
-func insert(a [][2]int, index int, value [2]int) [][2]int {
+func insert(a [][2]float64, index int, value [2]float64) [][2]float64 {
 	if len(a) == index { // nil or empty slice or after last element
 		return append(a, value)
 	}
