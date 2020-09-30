@@ -425,7 +425,7 @@ outer2:
 
 }
 
-func dijkstra_single_optimized(pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int][]int, optEgdes [][2][2]int, dists [][][]float64) ([][]int, []float64, [2]int, int) {
+func dijkstra_single_optimized_pre(pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int][]int, optEgdes [][2][2]int, dists [][][]float64) ([][]int, []float64, [2]int, int) {
 
 	var visitedSquares = map[int]bool{}
 	suchraum := make([]int, len(result)*len(result[0]))
@@ -1101,7 +1101,7 @@ func getEdgesPosition(laInt, lnInt int) [][2]int {
 	return edges
 }
 
-func dijkstra_single_optimized_old(pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int][]int, optEgdes [][2][2]int) ([][]int, []float64, [2]int, int) {
+func dijkstra_single_optimized(pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int][]int, optEgdes [][2][2]int) ([][]int, []float64, [2]int, int) {
 
 	var visitedSquares = map[int]bool{}
 	suchraum := make([]int, len(result)*len(result[0]))

@@ -56,7 +56,8 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 	var preDij, distancesDij, _, popsDij = dijkstra_single(startPos[0], startPos[1], desPos[0], desPos[1])
 
 	var preDijBi, distancesDijBi, preDijBi2, distancesDijBi2, bestMeetingPoint, popsDijBi = dijkstra_bi(startPos[0], startPos[1], desPos[0], desPos[1])
-	var preDijOpt, distancesDijOpt, _, popsDijOpt = dijkstra_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
+	var preDijOpt, distancesDijOpt, _, popsDijOpt = dijkstra_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges)
+	var preDijOptPre, distancesDijOptPre, _, popsDijOptPre = dijkstra_single_optimized_pre(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
 	var preAStar, distancesAStar, _, popsAStar = a_stern_single(startPos[0], startPos[1], desPos[0], desPos[1])
 	var preAStarOpt, distancesAStarOpt, _, popsAStarOpt = a_stern_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges)
 	var preAStarOptPre, distancesAStarOptPre, _, popsAStarOptPre = a_stern_single_optimized_with_pre(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
@@ -71,8 +72,12 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 	println(popsDijBi)
 
 	println("dijkstra single optimized")
-	println(distancesDijOpt[bestMeetingPoint[0]*len(result[0])+bestMeetingPoint[1]] + distancesDijOpt[bestMeetingPoint[0]*len(result[0])+bestMeetingPoint[1]])
+	println(distancesDijOpt[desPos[0]*len(result[0])+desPos[1]])
 	println(popsDijOpt)
+
+	println("dijkstra single optimized pre")
+	println(distancesDijOptPre[desPos[0]*len(result[0])+desPos[1]])
+	println(popsDijOptPre)
 
 	println("a star single")
 	println(distancesAStar[desPos[0]*len(result[0])+desPos[1]])
@@ -99,6 +104,10 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 		println("dijkstra opt")
 		way = getShortestPath(desPos[0], desPos[1], preDijOpt)
 		println(distancesDijOpt[desPos[0]*len(result[0])+desPos[1]])
+	} else if algorithm == "dijkstraOptWithPre" {
+		println("dijkstra opt with pre")
+		way = getShortestPath(desPos[0], desPos[1], preDijOptPre)
+		println(distancesDijOptPre[desPos[0]*len(result[0])+desPos[1]])
 	} else if algorithm == "astarOpt" {
 		println("astar opt")
 		way = getShortestPath(desPos[0], desPos[1], preAStarOpt)
@@ -145,7 +154,7 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 
 		for i := 0; i <= len(wayCords)-2; i = i + 1 {
 
-			if GreatCircleDistance(wayCords[i], wayCords[i+1]) > 1 {
+			if GreatCircleDistance(wayCords[i], wayCords[i+1]) > 5 {
 				divided = true
 
 				var midPoint = getMidPoint(wayCords[i][0], wayCords[i][1], wayCords[i+1][0], wayCords[i+1][1])
