@@ -18,7 +18,7 @@ var result [][]bool
 var optEdges [][2][2]int
 var distsOpt [][][]float64
 
-var mapPointSquares = make(map[[2]int][]int)
+var mapPointSquares = make(map[[2]int]int)
 
 func main() {
 
@@ -72,9 +72,9 @@ func main() {
 
 			for k := 0; k <= optEdges[i][1][1]-optEdges[i][0][1]; k++ {
 
-				var list = mapPointSquares[[2]int{optEdges[i][0][0] + j, optEdges[i][0][1] + k}]
-				list = append(list, i)
-				mapPointSquares[[2]int{optEdges[i][0][0] + j, optEdges[i][0][1] + k}] = list
+				//var list = mapPointSquares[[2]int{optEdges[i][0][0] + j, optEdges[i][0][1] + k}]
+				//list = append(list, i)
+				mapPointSquares[[2]int{optEdges[i][0][0] + j, optEdges[i][0][1] + k}] = i
 
 			}
 		}
@@ -110,7 +110,7 @@ func main() {
 	println(t.String())
 	var counterPOPS = 0
 
-	for i := 0; i <= 100; i++ {
+	for i := 0; i <= -100; i++ {
 
 		var _, _, _, counter = dijkstra_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
 		counterPOPS = counterPOPS + counter
@@ -148,21 +148,6 @@ func main() {
 
 	json.Unmarshal([]byte(byteValue), &optEdges)
 
-	for i := 0; i <= len(optEdges)-1; i++ {
-
-		for j := 0; j <= optEdges[i][1][0]-optEdges[i][0][0]; j++ {
-
-			for k := 0; k <= optEdges[i][1][1]-optEdges[i][0][1]; k++ {
-
-				var list = mapPointSquares[[2]int{optEdges[i][0][0] + j, optEdges[i][0][1] + k}]
-				list = append(list, i)
-				mapPointSquares[[2]int{optEdges[i][0][0] + j, optEdges[i][0][1] + k}] = list
-
-			}
-		}
-
-	}
-
 	jsonFile, err = os.Open("data/optimization_squares_distances")
 
 	if err != nil {
@@ -180,7 +165,7 @@ func main() {
 	counterPOPS = 0
 
 	for i := 0; i <= -100; i++ {
-		//println("sdfsdfs")
+
 		var _, _, _, counter = dijkstra_single_optimized(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
 
 		counterPOPS = counterPOPS + counter
@@ -195,8 +180,8 @@ func main() {
 	println(t.String())
 	counterPOPS = 0
 
-	for i := 0; i <= 100; i++ {
-		//println("sdfsdfs")
+	for i := 0; i <= -100; i++ {
+
 		var _, _, _, counter = dijkstra_single_optimized_pre(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
 
 		counterPOPS = counterPOPS + counter
@@ -298,7 +283,8 @@ func main() {
 	for i := 0; i <= len(result)-1; i = i + 10 {
 		for j := 0; j <= len(result[i])-1; j = j + 10 {
 
-			if len(mapPointSquares[[2]int{i, j}]) == 1 {
+			var _, b = mapPointSquares[[2]int{i, j}]
+			if b {
 				print("X")
 			} else {
 				print(" ")

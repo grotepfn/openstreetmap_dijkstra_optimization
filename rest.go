@@ -17,7 +17,7 @@ var result [][]bool
 var optEdges [][2][2]int
 var distsOpt [][][]float64
 
-var mapPointSquares = make(map[[2]int][]int)
+var mapPointSquares = make(map[[2]int]int)
 
 func homeLink(w http.ResponseWriter, r *http.Request) {
 
@@ -134,8 +134,6 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 			way2[i], way2[j] = way2[j], way2[i]
 		}
 
-		//wayCords2 = wayCords2[1:]
-
 		way = append(way, way2...)
 
 	}
@@ -146,24 +144,6 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i <= len(way)-1; i++ {
 
 		wayCords = append(wayCords, getCordsFromArrayPosition(len(result), len(result[0]), way[i][0], way[i][1]))
-	}
-
-	var divided = true
-	for divided {
-		divided = false
-
-		for i := 0; i <= len(wayCords)-2; i = i + 1 {
-
-			if GreatCircleDistance(wayCords[i], wayCords[i+1]) > 5 {
-				divided = true
-
-				var midPoint = getMidPoint(wayCords[i][0], wayCords[i][1], wayCords[i+1][0], wayCords[i+1][1])
-
-				wayCords = insert(wayCords, i+1, midPoint)
-				break
-			}
-
-		}
 	}
 
 	var payload, err = json.Marshal(wayCords)
@@ -225,9 +205,7 @@ func main() {
 
 			for k := 0; k <= optEdges[i][1][1]-optEdges[i][0][1]; k++ {
 
-				var list = mapPointSquares[[2]int{optEdges[i][0][0] + j, optEdges[i][0][1] + k}]
-				list = append(list, i)
-				mapPointSquares[[2]int{optEdges[i][0][0] + j, optEdges[i][0][1] + k}] = list
+				mapPointSquares[[2]int{optEdges[i][0][0] + j, optEdges[i][0][1] + k}] = i
 
 			}
 		}
