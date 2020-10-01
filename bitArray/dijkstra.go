@@ -1,4 +1,4 @@
-package main
+package bitArray
 
 import (
 	"container/heap"
@@ -63,7 +63,7 @@ func (pq *PriorityQueue) update(item *Item, pos [2]int, distance float64) {
 //}
 
 //https://dev.to/douglasmakey/implementation-of-dijkstra-using-heap-in-go-6e3
-func dijkstra_single(pos1, pos2, pos3, pos4 int) ([][]int, []float64, [2]int, int) {
+func Dijkstra_single(pos1, pos2, pos3, pos4 int, result [][]bool) ([][]int, []float64, [2]int, int) {
 
 	var counterPOPS = 0
 
@@ -115,10 +115,10 @@ func dijkstra_single(pos1, pos2, pos3, pos4 int) ([][]int, []float64, [2]int, in
 			continue
 		}
 
-		var neighbours = getEdgesPosition(node[0], node[1])
+		var neighbours = GetEdgesPosition(result, node[0], node[1])
 		for k := 0; k <= len(neighbours)-1; k++ {
 
-			var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
+			var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
 
 			var alt = distances[node[0]*(len(result[0]))+node[1]] + distance
 
@@ -158,7 +158,7 @@ func dijkstra_single(pos1, pos2, pos3, pos4 int) ([][]int, []float64, [2]int, in
 
 }
 
-func a_stern_single_optimized(pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int]int, optEgdes [][2][2]int) ([][]int, []float64, [2]int, int) {
+func A_stern_single_optimized(result [][]bool, pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int]int, optEgdes [][2][2]int) ([][]int, []float64, [2]int, int) {
 
 	var visitedSquares = map[int]bool{}
 	suchraum := make([]bool, len(result)*len(result[0]))
@@ -192,7 +192,7 @@ func a_stern_single_optimized(pos1, pos2, pos3, pos4 int, mapPointSquares map[[2
 				// Insert a new item and then modify its priority.
 				item := &Item{
 					pos:                    [2]int{pos1, pos2},
-					distancePriority:       GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), pos1, pos2), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4)),
+					distancePriority:       GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), pos1, pos2), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4)),
 					actualDistanceForAStar: 0,
 				}
 				heap.Push(&pq, item)
@@ -247,17 +247,17 @@ outer2:
 
 				}
 
-				if visitedPoints[optEdges[k][1][0]*len(result[0])+xAxis] == true {
+				if visitedPoints[optEgdes[k][1][0]*len(result[0])+xAxis] == true {
 
 					continue
 				}
 
 				//upper line
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), optEgdes[k][0][0], xAxis))
+				var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), optEgdes[k][0][0], xAxis))
 
 				var alt = distances[node[0]*len(result[0])+node[1]] + distance
 
-				var altHelp = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), optEgdes[k][0][0], xAxis), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
+				var altHelp = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), optEgdes[k][0][0], xAxis), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
 
 				if alt < distances[optEgdes[k][0][0]*len(result[0])+xAxis] {
 					newItem := &Item{pos: [2]int{optEgdes[k][0][0], xAxis}, distancePriority: alt + altHelp, optimized: true, actualDistanceForAStar: alt}
@@ -272,10 +272,10 @@ outer2:
 
 				//lower line
 
-				distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), optEgdes[k][1][0], xAxis))
+				distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), optEgdes[k][1][0], xAxis))
 
 				alt = distances[node[0]*len(result[0])+node[1]] + distance
-				altHelp = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), optEgdes[k][1][0], xAxis), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
+				altHelp = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), optEgdes[k][1][0], xAxis), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
 
 				if alt < distances[optEgdes[k][1][0]*len(result[0])+xAxis] {
 					newItem2 := &Item{pos: [2]int{optEgdes[k][1][0], xAxis}, distancePriority: alt + altHelp, optimized: true, actualDistanceForAStar: alt}
@@ -296,10 +296,10 @@ outer2:
 
 				//left line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, optEgdes[k][0][1]))
+				var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), yAxis, optEgdes[k][0][1]))
 
 				var alt = distances[node[0]*len(result[0])+node[1]] + distance
-				var altHelp = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), yAxis, optEgdes[k][0][1]), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
+				var altHelp = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), yAxis, optEgdes[k][0][1]), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
 
 				if alt < distances[(yAxis)*len(result[0])+optEgdes[k][0][1]] {
 					newItem := &Item{pos: [2]int{yAxis, optEgdes[k][0][1]}, distancePriority: alt + altHelp, optimized: true, actualDistanceForAStar: alt}
@@ -312,10 +312,10 @@ outer2:
 
 				//right line
 
-				distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, optEgdes[k][1][1]))
+				distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), yAxis, optEgdes[k][1][1]))
 
 				alt = distances[node[0]*len(result[0])+node[1]] + distance
-				altHelp = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), yAxis, optEgdes[k][1][1]), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
+				altHelp = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), yAxis, optEgdes[k][1][1]), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
 
 				if alt < distances[(yAxis)*len(result[0])+optEgdes[k][1][1]] {
 					newItem2 := &Item{pos: [2]int{yAxis, optEgdes[k][1][1]}, distancePriority: alt + altHelp, optimized: true, actualDistanceForAStar: alt}
@@ -343,10 +343,10 @@ outer2:
 		/*
 			if k != -1 && node[0] >= optEgdes[k][0][0] && node[1] >= optEgdes[k][0][1] && node[0] <= optEgdes[k][1][0] && node[1] <= optEgdes[k][1][1] && (pos3 >= optEgdes[k][0][0] && pos4 >= optEgdes[k][0][1] && pos3 <= optEgdes[k][1][0] && pos4 <= optEgdes[k][1][1]) {
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, node[0], node[1]), getCordsFromArrayPosition(result, pos3, pos4))
+				var distance = GreatCircleDistance(GetCordsFromArrayPosition(result, node[0], node[1]), GetCordsFromArrayPosition(result, pos3, pos4))
 
 				var alt = distances[node[0]*len(result[0])+node[1]] + distance
-				//var alt2 = alt + GreatCircleDistance(getCordsFromArrayPosition(result, neighbours[k][0], neighbours[k][1]), getCordsFromArrayPosition(result, pos3, pos4))
+				//var alt2 = alt + GreatCircleDistance(GetCordsFromArrayPosition(result, neighbours[k][0], neighbours[k][1]), GetCordsFromArrayPosition(result, pos3, pos4))
 
 				if alt <= distances[pos3*len(result[0])+pos4] {
 
@@ -371,7 +371,7 @@ outer2:
 				return pre, distances, node, counterPOPS
 			}
 		*/
-		var neighbours = getEdgesPosition(node[0], node[1])
+		var neighbours = GetEdgesPosition(result, node[0], node[1])
 
 	neig:
 		for k := 0; k <= len(neighbours)-1; k++ {
@@ -381,13 +381,13 @@ outer2:
 				continue neig
 			}
 
-			var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
+			var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
 
 			var alt = distances[node[0]*len(result[0])+node[1]] + distance
-			//var alt2 = alt + GreatCircleDistance(getCordsFromArrayPosition(result, neighbours[k][0], neighbours[k][1]), getCordsFromArrayPosition(result, pos3, pos4))
+			//var alt2 = alt + GreatCircleDistance(GetCordsFromArrayPosition(result, neighbours[k][0], neighbours[k][1]), GetCordsFromArrayPosition(result, pos3, pos4))
 
 			if alt < distances[neighbours[k][0]*len(result[0])+neighbours[k][1]] {
-				newItem := &Item{pos: neighbours[k], actualDistanceForAStar: alt, distancePriority: alt + GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))}
+				newItem := &Item{pos: neighbours[k], actualDistanceForAStar: alt, distancePriority: alt + GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))}
 				pre[neighbours[k][0]*len(result[0])+neighbours[k][1]] = []int{node[0], node[1]}
 				distances[neighbours[k][0]*len(result[0])+neighbours[k][1]] = alt
 
@@ -421,7 +421,7 @@ outer2:
 
 }
 
-func dijkstra_single_optimized_pre(pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int]int, optEgdes [][2][2]int, dists [][][]float64) ([][]int, []float64, [2]int, int) {
+func Dijkstra_single_optimized_pre(result [][]bool, pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int]int, optEdges [][2][2]int, dists [][][]float64) ([][]int, []float64, [2]int, int) {
 
 	var visitedSquares = map[int]bool{}
 	suchraum := make([]int, len(result)*len(result[0]))
@@ -510,10 +510,10 @@ outer2:
 		k, ok = mapPointSquares[[2]int{node[0], node[1]}]
 
 		//node within square and dest pos not within square
-		if !isOptimized && ok && node[0] >= optEgdes[k][0][0] && node[1] >= optEgdes[k][0][1] && node[0] <= optEgdes[k][1][0] && node[1] <= optEgdes[k][1][1] && ((pos3 < optEgdes[k][0][0] || pos4 < optEgdes[k][0][1]) || (pos3 > optEgdes[k][1][0] || pos4 > optEgdes[k][1][1])) && (node[0] == optEgdes[k][0][0] || node[1] == optEgdes[k][0][1] || node[0] == optEgdes[k][1][0] || node[1] == optEgdes[k][1][1]) && (node[0] == optEgdes[k][0][0] || node[1] == optEgdes[k][0][1] || node[0] == optEgdes[k][1][0] || node[1] == optEgdes[k][1][1]) {
+		if !isOptimized && ok && node[0] >= optEdges[k][0][0] && node[1] >= optEdges[k][0][1] && node[0] <= optEdges[k][1][0] && node[1] <= optEdges[k][1][1] && ((pos3 < optEdges[k][0][0] || pos4 < optEdges[k][0][1]) || (pos3 > optEdges[k][1][0] || pos4 > optEdges[k][1][1])) && (node[0] == optEdges[k][0][0] || node[1] == optEdges[k][0][1] || node[0] == optEdges[k][1][0] || node[1] == optEdges[k][1][1]) && (node[0] == optEdges[k][0][0] || node[1] == optEdges[k][0][1] || node[0] == optEdges[k][1][0] || node[1] == optEdges[k][1][1]) {
 
 			if !visitedSquares[k] {
-				optimizedAmount += (optEgdes[k][1][1] - optEgdes[k][0][1]) * (optEgdes[k][1][0] - optEgdes[k][0][0])
+				optimizedAmount += (optEdges[k][1][1] - optEdges[k][0][1]) * (optEdges[k][1][0] - optEdges[k][0][0])
 			}
 			visitedSquares[k] = true
 
@@ -572,11 +572,11 @@ outer2:
 
 				var alt = distances[node[0]*len(result[0])+node[1]] + distance
 
-				if alt < distances[optEgdes[k][0][0]*len(result[0])+(optEdges[k][0][1]+i)] {
+				if alt < distances[optEdges[k][0][0]*len(result[0])+(optEdges[k][0][1]+i)] {
 
-					newItem := &Item{pos: [2]int{optEgdes[k][0][0], (optEdges[k][0][1] + i)}, distancePriority: alt, optimized: true}
-					pre[optEgdes[k][0][0]*len(result[0])+(optEdges[k][0][1]+i)] = []int{node[0], node[1]}
-					distances[optEgdes[k][0][0]*len(result[0])+(optEdges[k][0][1]+i)] = alt
+					newItem := &Item{pos: [2]int{optEdges[k][0][0], (optEdges[k][0][1] + i)}, distancePriority: alt, optimized: true}
+					pre[optEdges[k][0][0]*len(result[0])+(optEdges[k][0][1]+i)] = []int{node[0], node[1]}
+					distances[optEdges[k][0][0]*len(result[0])+(optEdges[k][0][1]+i)] = alt
 
 					heap.Push(&pq, newItem)
 
@@ -590,11 +590,11 @@ outer2:
 
 				var alt = distances[node[0]*len(result[0])+node[1]] + distance
 
-				if alt < distances[optEgdes[k][1][0]*len(result[0])+i+optEdges[k][0][1]] {
+				if alt < distances[optEdges[k][1][0]*len(result[0])+i+optEdges[k][0][1]] {
 
-					newItem := &Item{pos: [2]int{optEgdes[k][1][0], optEdges[k][0][1] + i}, distancePriority: alt, optimized: true}
-					pre[optEgdes[k][1][0]*len(result[0])+optEdges[k][0][1]+i] = []int{node[0], node[1]}
-					distances[optEgdes[k][1][0]*len(result[0])+optEdges[k][0][1]+i] = alt
+					newItem := &Item{pos: [2]int{optEdges[k][1][0], optEdges[k][0][1] + i}, distancePriority: alt, optimized: true}
+					pre[optEdges[k][1][0]*len(result[0])+optEdges[k][0][1]+i] = []int{node[0], node[1]}
+					distances[optEdges[k][1][0]*len(result[0])+optEdges[k][0][1]+i] = alt
 
 					heap.Push(&pq, newItem)
 
@@ -661,8 +661,8 @@ outer2:
 				}*/
 
 			//set nodes within negative
-			for yAxis := optEgdes[k][0][0] + 1; yAxis < optEgdes[k][1][0]; yAxis++ {
-				for xAxis := optEgdes[k][0][1] + 1; xAxis < optEgdes[k][1][1]; xAxis++ {
+			for yAxis := optEdges[k][0][0] + 1; yAxis < optEdges[k][1][0]; yAxis++ {
+				for xAxis := optEdges[k][0][1] + 1; xAxis < optEdges[k][1][1]; xAxis++ {
 
 					visitedPoints[yAxis*len(result[0])+xAxis] = true
 				}
@@ -674,10 +674,10 @@ outer2:
 		/*
 			if k != -1 && node[0] >= optEgdes[k][0][0] && node[1] >= optEgdes[k][0][1] && node[0] <= optEgdes[k][1][0] && node[1] <= optEgdes[k][1][1] && (pos3 >= optEgdes[k][0][0] && pos4 >= optEgdes[k][0][1] && pos3 <= optEgdes[k][1][0] && pos4 <= optEgdes[k][1][1]) {
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(result, node[0], node[1]), getCordsFromArrayPosition(result, pos3, pos4))
+				var distance = GreatCircleDistance(GetCordsFromArrayPosition(result, node[0], node[1]), GetCordsFromArrayPosition(result, pos3, pos4))
 
 				var alt = distances[node[0]*len(result[0])+node[1]] + distance
-				//var alt2 = alt + GreatCircleDistance(getCordsFromArrayPosition(result, neighbours[k][0], neighbours[k][1]), getCordsFromArrayPosition(result, pos3, pos4))
+				//var alt2 = alt + GreatCircleDistance(GetCordsFromArrayPosition(result, neighbours[k][0], neighbours[k][1]), GetCordsFromArrayPosition(result, pos3, pos4))
 
 				if alt <= distances[pos3*len(result[0])+pos4] {
 
@@ -702,7 +702,7 @@ outer2:
 				return pre, distances, node, counterPOPS
 			}
 		*/
-		var neighbours = getEdgesPosition(node[0], node[1])
+		var neighbours = GetEdgesPosition(result, node[0], node[1])
 
 	neig:
 		for k := 0; k <= len(neighbours)-1; k++ {
@@ -712,10 +712,10 @@ outer2:
 				continue neig
 			}
 
-			var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
+			var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
 
 			var alt = distances[node[0]*len(result[0])+node[1]] + distance
-			//var alt2 = alt + GreatCircleDistance(getCordsFromArrayPosition(result, neighbours[k][0], neighbours[k][1]), getCordsFromArrayPosition(result, pos3, pos4))
+			//var alt2 = alt + GreatCircleDistance(GetCordsFromArrayPosition(result, neighbours[k][0], neighbours[k][1]), GetCordsFromArrayPosition(result, pos3, pos4))
 
 			if alt < distances[neighbours[k][0]*len(result[0])+neighbours[k][1]] {
 				newItem := &Item{pos: neighbours[k], distancePriority: alt}
@@ -745,7 +745,7 @@ outer2:
 
 }
 
-func a_stern_single(pos1, pos2, pos3, pos4 int) ([][]int, []float64, [2]int, int) {
+func A_stern_single(result [][]bool, pos1, pos2, pos3, pos4 int) ([][]int, []float64, [2]int, int) {
 
 	var counterPOPS = 0
 
@@ -772,7 +772,7 @@ func a_stern_single(pos1, pos2, pos3, pos4 int) ([][]int, []float64, [2]int, int
 				// Insert a new item and then modify its priority.
 				item := &Item{
 					pos:              [2]int{pos1, pos2},
-					distancePriority: GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), pos1, pos2), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4)),
+					distancePriority: GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), pos1, pos2), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4)),
 				}
 				heap.Push(&pq, item)
 
@@ -803,17 +803,17 @@ func a_stern_single(pos1, pos2, pos3, pos4 int) ([][]int, []float64, [2]int, int
 			continue
 		}
 
-		var neighbours = getEdgesPosition(node[0], node[1])
+		var neighbours = GetEdgesPosition(result, node[0], node[1])
 
 		for k := 0; k <= len(neighbours)-1; k++ {
 
-			var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
+			var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
 
 			var alt = distances[node[0]*len(result[0])+node[1]] + distance
 
 			if alt < distances[neighbours[k][0]*len(result[0])+neighbours[k][1]] {
 
-				newItem := &Item{pos: neighbours[k], distancePriority: alt + GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))}
+				newItem := &Item{pos: neighbours[k], distancePriority: alt + GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))}
 				pre[neighbours[k][0]*len(result[0])+neighbours[k][1]] = []int{node[0], node[1]}
 				distances[neighbours[k][0]*len(result[0])+neighbours[k][1]] = alt
 
@@ -835,7 +835,7 @@ func a_stern_single(pos1, pos2, pos3, pos4 int) ([][]int, []float64, [2]int, int
 
 }
 
-func dijkstra_bi(pos1, pos2, pos3, pos4 int) ([][]int, []float64, [][]int, []float64, [2]int, int) {
+func Dijkstra_bi(result [][]bool, pos1, pos2, pos3, pos4 int) ([][]int, []float64, [][]int, []float64, [2]int, int) {
 
 	var counterPOPS = 0
 
@@ -918,11 +918,11 @@ func dijkstra_bi(pos1, pos2, pos3, pos4 int) ([][]int, []float64, [][]int, []flo
 			bothVisited = alreadyVisited2[[2]int{node[0], node[1]}]
 			alreadyVisited[[2]int{node[0], node[1]}] = true
 
-			var neighbours = getEdgesPosition(node[0], node[1])
+			var neighbours = GetEdgesPosition(result, node[0], node[1])
 
 			for k := 0; k <= len(neighbours)-1; k++ {
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
+				var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
 
 				var alt = distances[node[0]*len(result[0])+node[1]] + distance
 
@@ -951,11 +951,11 @@ func dijkstra_bi(pos1, pos2, pos3, pos4 int) ([][]int, []float64, [][]int, []flo
 			bothVisited2 = alreadyVisited[[2]int{node2[0], node2[1]}]
 			alreadyVisited2[[2]int{node2[0], node2[1]}] = true
 
-			var neighbours = getEdgesPosition(node2[0], node2[1])
+			var neighbours = GetEdgesPosition(result, node2[0], node2[1])
 
 			for k := 0; k <= len(neighbours)-1; k++ {
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node2[0], node2[1]), getCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
+				var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node2[0], node2[1]), GetCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
 
 				var alt = distances2[node2[0]*len(result[0])+node2[1]] + distance
 
@@ -998,7 +998,7 @@ func dijkstra_bi(pos1, pos2, pos3, pos4 int) ([][]int, []float64, [][]int, []flo
 
 }
 
-func getEdgesPosition(laInt, lnInt int) [][2]int {
+func GetEdgesPosition(result [][]bool, laInt, lnInt int) [][2]int {
 
 	var edges [][2]int
 
@@ -1006,7 +1006,7 @@ func getEdgesPosition(laInt, lnInt int) [][2]int {
 	//oben links
 	if laInt-1 >= 0 {
 
-		m = modLikePython(lnInt-1, len(result[laInt-1])-1)
+		m = ModLikePython(lnInt-1, len(result[laInt-1])-1)
 	}
 	if laInt-1 >= 0 && result[laInt-1][m] == true {
 
@@ -1022,7 +1022,7 @@ func getEdgesPosition(laInt, lnInt int) [][2]int {
 	//oben rechts
 	if laInt-1 >= 0 {
 
-		m = modLikePython(lnInt+1, len(result[laInt-1])-1)
+		m = ModLikePython(lnInt+1, len(result[laInt-1])-1)
 	}
 	if laInt-1 >= 0 && result[laInt-1][m] == true {
 
@@ -1031,7 +1031,7 @@ func getEdgesPosition(laInt, lnInt int) [][2]int {
 
 	//links
 
-	m = modLikePython(lnInt-1, len(result[laInt])-1)
+	m = ModLikePython(lnInt-1, len(result[laInt])-1)
 
 	if result[laInt][m] == true {
 
@@ -1040,7 +1040,7 @@ func getEdgesPosition(laInt, lnInt int) [][2]int {
 
 	//rechts
 
-	m = modLikePython(lnInt+1, len(result[laInt])-1)
+	m = ModLikePython(lnInt+1, len(result[laInt])-1)
 
 	if result[laInt][m] == true {
 
@@ -1049,7 +1049,7 @@ func getEdgesPosition(laInt, lnInt int) [][2]int {
 	//unten links
 	if laInt+1 <= len(result)-1 {
 
-		m = modLikePython(lnInt-1, len(result[laInt+1])-1)
+		m = ModLikePython(lnInt-1, len(result[laInt+1])-1)
 	}
 	if laInt+1 <= len(result)-1 && result[laInt+1][m] == true {
 
@@ -1064,7 +1064,7 @@ func getEdgesPosition(laInt, lnInt int) [][2]int {
 	//unten rechts
 	if laInt+1 <= len(result)-1 {
 
-		m = modLikePython(lnInt+1, len(result[laInt+1])-1)
+		m = ModLikePython(lnInt+1, len(result[laInt+1])-1)
 	}
 	if laInt+1 <= len(result)-1 && result[laInt+1][m] == true {
 
@@ -1074,7 +1074,7 @@ func getEdgesPosition(laInt, lnInt int) [][2]int {
 	return edges
 }
 
-func dijkstra_single_optimized(pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int]int, optEgdes [][2][2]int) ([][]int, []float64, [2]int, int) {
+func Dijkstra_single_optimized(result [][]bool, pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int]int, optEdges [][2][2]int) ([][]int, []float64, [2]int, int) {
 
 	var visitedSquares = map[int]bool{}
 	suchraum := make([]int, len(result)*len(result[0]))
@@ -1151,13 +1151,13 @@ outer2:
 		//var bestSquareDist = math.MaxFloat64
 
 		//node within square and dest pos not within square
-		if !isOptimized && ok && node[0] >= optEgdes[k][0][0] && node[1] >= optEgdes[k][0][1] && node[0] <= optEgdes[k][1][0] && node[1] <= optEgdes[k][1][1] && ((pos3 < optEgdes[k][0][0] || pos4 < optEgdes[k][0][1]) || (pos3 > optEgdes[k][1][0] || pos4 > optEgdes[k][1][1])) && (node[0] == optEgdes[k][0][0] || node[1] == optEgdes[k][0][1] || node[0] == optEgdes[k][1][0] || node[1] == optEgdes[k][1][1]) {
+		if !isOptimized && ok && node[0] >= optEdges[k][0][0] && node[1] >= optEdges[k][0][1] && node[0] <= optEdges[k][1][0] && node[1] <= optEdges[k][1][1] && ((pos3 < optEdges[k][0][0] || pos4 < optEdges[k][0][1]) || (pos3 > optEdges[k][1][0] || pos4 > optEdges[k][1][1])) && (node[0] == optEdges[k][0][0] || node[1] == optEdges[k][0][1] || node[0] == optEdges[k][1][0] || node[1] == optEdges[k][1][1]) {
 			if !visitedSquares[k] {
-				optimizedAmount += (optEgdes[k][1][1] - optEgdes[k][0][1]) * (optEgdes[k][1][0] - optEgdes[k][0][0])
+				optimizedAmount += (optEdges[k][1][1] - optEdges[k][0][1]) * (optEdges[k][1][0] - optEdges[k][0][0])
 			}
 			visitedSquares[k] = true
 
-			for xAxis := optEgdes[k][0][1]; xAxis <= optEgdes[k][1][1]; xAxis++ {
+			for xAxis := optEdges[k][0][1]; xAxis <= optEdges[k][1][1]; xAxis++ {
 
 				if visitedPoints[optEdges[k][1][0]*len(result[0])+xAxis] == true {
 
@@ -1165,14 +1165,14 @@ outer2:
 				}
 
 				//upper line
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), optEgdes[k][0][0], xAxis))
+				var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), optEdges[k][0][0], xAxis))
 
 				var alt = distances[node[0]*len(result[0])+node[1]] + distance
 
-				if alt < distances[optEgdes[k][0][0]*len(result[0])+xAxis] {
-					newItem := &Item{pos: [2]int{optEgdes[k][0][0], xAxis}, distancePriority: alt, optimized: true}
-					pre[optEgdes[k][0][0]*len(result[0])+xAxis] = []int{node[0], node[1]}
-					distances[optEgdes[k][0][0]*len(result[0])+xAxis] = alt
+				if alt < distances[optEdges[k][0][0]*len(result[0])+xAxis] {
+					newItem := &Item{pos: [2]int{optEdges[k][0][0], xAxis}, distancePriority: alt, optimized: true}
+					pre[optEdges[k][0][0]*len(result[0])+xAxis] = []int{node[0], node[1]}
+					distances[optEdges[k][0][0]*len(result[0])+xAxis] = alt
 
 					heap.Push(&pq, newItem)
 
@@ -1180,14 +1180,14 @@ outer2:
 
 				//lower line
 
-				distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), optEgdes[k][1][0], xAxis))
+				distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), optEdges[k][1][0], xAxis))
 
 				alt = distances[node[0]*len(result[0])+node[1]] + distance
 
-				if alt < distances[optEgdes[k][1][0]*len(result[0])+xAxis] {
-					newItem2 := &Item{pos: [2]int{optEgdes[k][1][0], xAxis}, distancePriority: alt, optimized: true}
-					pre[optEgdes[k][1][0]*len(result[0])+xAxis] = []int{node[0], node[1]}
-					distances[optEgdes[k][1][0]*len(result[0])+xAxis] = alt
+				if alt < distances[optEdges[k][1][0]*len(result[0])+xAxis] {
+					newItem2 := &Item{pos: [2]int{optEdges[k][1][0], xAxis}, distancePriority: alt, optimized: true}
+					pre[optEdges[k][1][0]*len(result[0])+xAxis] = []int{node[0], node[1]}
+					distances[optEdges[k][1][0]*len(result[0])+xAxis] = alt
 
 					heap.Push(&pq, newItem2)
 
@@ -1196,39 +1196,39 @@ outer2:
 			}
 
 			//left right
-			for yAxis := optEgdes[k][0][0]; yAxis <= optEgdes[k][1][0]; yAxis++ {
+			for yAxis := optEdges[k][0][0]; yAxis <= optEdges[k][1][0]; yAxis++ {
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, optEgdes[k][0][1]))
+				var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), yAxis, optEdges[k][0][1]))
 
 				var alt = distances[node[0]*len(result[0])+node[1]] + distance
 
-				if alt < distances[(yAxis)*len(result[0])+optEgdes[k][0][1]] {
-					newItem := &Item{pos: [2]int{yAxis, optEgdes[k][0][1]}, distancePriority: alt, optimized: true}
-					pre[(yAxis)*len(result[0])+optEgdes[k][0][1]] = []int{node[0], node[1]}
-					distances[(yAxis)*len(result[0])+optEgdes[k][0][1]] = alt
+				if alt < distances[(yAxis)*len(result[0])+optEdges[k][0][1]] {
+					newItem := &Item{pos: [2]int{yAxis, optEdges[k][0][1]}, distancePriority: alt, optimized: true}
+					pre[(yAxis)*len(result[0])+optEdges[k][0][1]] = []int{node[0], node[1]}
+					distances[(yAxis)*len(result[0])+optEdges[k][0][1]] = alt
 
 					heap.Push(&pq, newItem)
 
 				}
 
 				//right line
-				distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, optEgdes[k][1][1]))
+				distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), yAxis, optEdges[k][1][1]))
 
 				alt = distances[node[0]*len(result[0])+node[1]] + distance
 
-				if visitedPoints[(yAxis)*len(result[0])+optEgdes[k][1][1]] == true {
+				if visitedPoints[(yAxis)*len(result[0])+optEdges[k][1][1]] == true {
 					println("fehler11111111222222222222233333333")
 					println(node[0])
 					println(node[1])
 
 				}
-				if alt < distances[(yAxis)*len(result[0])+optEgdes[k][1][1]] {
-					newItem2 := &Item{pos: [2]int{yAxis, optEgdes[k][1][1]}, distancePriority: alt, optimized: true}
-					pre[(yAxis)*len(result[0])+optEgdes[k][1][1]] = []int{node[0], node[1]}
-					distances[(yAxis)*len(result[0])+optEgdes[k][1][1]] = alt
+				if alt < distances[(yAxis)*len(result[0])+optEdges[k][1][1]] {
+					newItem2 := &Item{pos: [2]int{yAxis, optEdges[k][1][1]}, distancePriority: alt, optimized: true}
+					pre[(yAxis)*len(result[0])+optEdges[k][1][1]] = []int{node[0], node[1]}
+					distances[(yAxis)*len(result[0])+optEdges[k][1][1]] = alt
 
 					heap.Push(&pq, newItem2)
-					if visitedPoints[(yAxis)*len(result[0])+optEgdes[k][1][1]] == true {
+					if visitedPoints[(yAxis)*len(result[0])+optEdges[k][1][1]] == true {
 						println("fehler11111111222222222222233333333")
 						println(node[0])
 						println(node[1])
@@ -1238,8 +1238,8 @@ outer2:
 			}
 
 			//set nodes within negative
-			for yAxis := optEgdes[k][0][0] + 1; yAxis < optEgdes[k][1][0]; yAxis++ {
-				for xAxis := optEgdes[k][0][1] + 1; xAxis < optEgdes[k][1][1]; xAxis++ {
+			for yAxis := optEdges[k][0][0] + 1; yAxis < optEdges[k][1][0]; yAxis++ {
+				for xAxis := optEdges[k][0][1] + 1; xAxis < optEdges[k][1][1]; xAxis++ {
 
 					visitedPoints[yAxis*len(result[0])+xAxis] = true
 				}
@@ -1247,7 +1247,7 @@ outer2:
 
 		}
 
-		var neighbours = getEdgesPosition(node[0], node[1])
+		var neighbours = GetEdgesPosition(result, node[0], node[1])
 
 	neig:
 		for k := 0; k <= len(neighbours)-1; k++ {
@@ -1257,7 +1257,7 @@ outer2:
 				continue neig
 			}
 
-			var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
+			var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
 
 			var alt = distances[node[0]*len(result[0])+node[1]] + distance
 
@@ -1297,7 +1297,7 @@ outer2:
 
 }
 
-func a_stern_single_optimized_with_pre(pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int]int, optEgdes [][2][2]int, dists [][][]float64) ([][]int, []float64, [2]int, int) {
+func A_stern_single_optimized_with_pre(result [][]bool, pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int]int, optEdges [][2][2]int, dists [][][]float64) ([][]int, []float64, [2]int, int) {
 
 	var visitedSquares = map[int]bool{}
 	suchraum := make([]bool, len(result)*len(result[0]))
@@ -1331,7 +1331,7 @@ func a_stern_single_optimized_with_pre(pos1, pos2, pos3, pos4 int, mapPointSquar
 				// Insert a new item and then modify its priority.
 				item := &Item{
 					pos:                    [2]int{pos1, pos2},
-					distancePriority:       GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), pos1, pos2), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4)),
+					distancePriority:       GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), pos1, pos2), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4)),
 					actualDistanceForAStar: 0,
 				}
 				heap.Push(&pq, item)
@@ -1369,11 +1369,11 @@ outer2:
 		k, ok = mapPointSquares[[2]int{node[0], node[1]}]
 
 		//node within square and dest pos not within square
-		if !isOptimized && ok && node[0] >= optEgdes[k][0][0] && node[1] >= optEgdes[k][0][1] && node[0] <= optEgdes[k][1][0] && node[1] <= optEgdes[k][1][1] && ((pos3 < optEgdes[k][0][0] || pos4 < optEgdes[k][0][1]) || (pos3 > optEgdes[k][1][0] || pos4 > optEgdes[k][1][1])) && (node[0] == optEgdes[k][0][0] || node[1] == optEgdes[k][0][1] || node[0] == optEgdes[k][1][0] || node[1] == optEgdes[k][1][1]) {
+		if !isOptimized && ok && node[0] >= optEdges[k][0][0] && node[1] >= optEdges[k][0][1] && node[0] <= optEdges[k][1][0] && node[1] <= optEdges[k][1][1] && ((pos3 < optEdges[k][0][0] || pos4 < optEdges[k][0][1]) || (pos3 > optEdges[k][1][0] || pos4 > optEdges[k][1][1])) && (node[0] == optEdges[k][0][0] || node[1] == optEdges[k][0][1] || node[0] == optEdges[k][1][0] || node[1] == optEdges[k][1][1]) {
 
 			//println("hiiiii optimizing")
 			if !visitedSquares[k] {
-				optimizedAmount += (optEgdes[k][1][1] - optEgdes[k][0][1]) * (optEgdes[k][1][0] - optEgdes[k][0][0])
+				optimizedAmount += (optEdges[k][1][1] - optEdges[k][0][1]) * (optEdges[k][1][0] - optEdges[k][0][0])
 			}
 			visitedSquares[k] = true
 
@@ -1434,13 +1434,13 @@ outer2:
 
 				var alt = distances[node[0]*len(result[0])+node[1]] + distance
 
-				if alt < distances[optEgdes[k][0][0]*len(result[0])+(optEdges[k][0][1]+i)] {
+				if alt < distances[optEdges[k][0][0]*len(result[0])+(optEdges[k][0][1]+i)] {
 
-					var altHelp = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), optEgdes[k][0][0], optEdges[k][0][1]+i), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
+					var altHelp = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), optEdges[k][0][0], optEdges[k][0][1]+i), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
 
-					newItem := &Item{pos: [2]int{optEgdes[k][0][0], (optEdges[k][0][1] + i)}, actualDistanceForAStar: alt, optimized: true, distancePriority: alt + altHelp}
-					pre[optEgdes[k][0][0]*len(result[0])+(optEdges[k][0][1]+i)] = []int{node[0], node[1]}
-					distances[optEgdes[k][0][0]*len(result[0])+(optEdges[k][0][1]+i)] = alt
+					newItem := &Item{pos: [2]int{optEdges[k][0][0], (optEdges[k][0][1] + i)}, actualDistanceForAStar: alt, optimized: true, distancePriority: alt + altHelp}
+					pre[optEdges[k][0][0]*len(result[0])+(optEdges[k][0][1]+i)] = []int{node[0], node[1]}
+					distances[optEdges[k][0][0]*len(result[0])+(optEdges[k][0][1]+i)] = alt
 
 					heap.Push(&pq, newItem)
 
@@ -1454,13 +1454,13 @@ outer2:
 
 				var alt = distances[node[0]*len(result[0])+node[1]] + distance
 
-				if alt < distances[optEgdes[k][1][0]*len(result[0])+i+optEdges[k][0][1]] {
+				if alt < distances[optEdges[k][1][0]*len(result[0])+i+optEdges[k][0][1]] {
 
-					var altHelp = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), optEgdes[k][1][0], optEdges[k][0][1]+i), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
+					var altHelp = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), optEdges[k][1][0], optEdges[k][0][1]+i), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
 
-					newItem := &Item{pos: [2]int{optEgdes[k][1][0], optEdges[k][0][1] + i}, actualDistanceForAStar: alt, optimized: true, distancePriority: alt + altHelp}
-					pre[optEgdes[k][1][0]*len(result[0])+optEdges[k][0][1]+i] = []int{node[0], node[1]}
-					distances[optEgdes[k][1][0]*len(result[0])+optEdges[k][0][1]+i] = alt
+					newItem := &Item{pos: [2]int{optEdges[k][1][0], optEdges[k][0][1] + i}, actualDistanceForAStar: alt, optimized: true, distancePriority: alt + altHelp}
+					pre[optEdges[k][1][0]*len(result[0])+optEdges[k][0][1]+i] = []int{node[0], node[1]}
+					distances[optEdges[k][1][0]*len(result[0])+optEdges[k][0][1]+i] = alt
 
 					heap.Push(&pq, newItem)
 
@@ -1477,7 +1477,7 @@ outer2:
 
 				if alt < distances[(optEdges[k][0][0]+i)*len(result[0])+optEdges[k][0][1]] {
 
-					var altHelp = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), optEgdes[k][0][0]+i, optEdges[k][0][1]), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
+					var altHelp = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), optEdges[k][0][0]+i, optEdges[k][0][1]), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
 
 					newItem := &Item{pos: [2]int{(optEdges[k][0][0] + i), optEdges[k][0][1]}, actualDistanceForAStar: alt, optimized: true, distancePriority: alt + altHelp}
 					pre[(optEdges[k][0][0]+i)*len(result[0])+optEdges[k][0][1]] = []int{node[0], node[1]}
@@ -1498,7 +1498,7 @@ outer2:
 
 				if alt < distances[(optEdges[k][0][0]+i)*len(result[0])+optEdges[k][1][1]] {
 
-					var altHelp = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), optEgdes[k][0][0]+i, optEdges[k][1][1]), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
+					var altHelp = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), optEdges[k][0][0]+i, optEdges[k][1][1]), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
 
 					newItem := &Item{pos: [2]int{(optEdges[k][0][0] + i), optEdges[k][1][1]}, actualDistanceForAStar: alt, optimized: true, distancePriority: alt + altHelp}
 					pre[(optEdges[k][0][0]+i)*len(result[0])+optEdges[k][1][1]] = []int{node[0], node[1]}
@@ -1511,8 +1511,8 @@ outer2:
 			}
 
 			//set nodes within negative
-			for yAxis := optEgdes[k][0][0] + 1; yAxis < optEgdes[k][1][0]; yAxis++ {
-				for xAxis := optEgdes[k][0][1] + 1; xAxis < optEgdes[k][1][1]; xAxis++ {
+			for yAxis := optEdges[k][0][0] + 1; yAxis < optEdges[k][1][0]; yAxis++ {
+				for xAxis := optEdges[k][0][1] + 1; xAxis < optEdges[k][1][1]; xAxis++ {
 
 					visitedPointsInSquare[yAxis*len(result[0])+xAxis] = true
 				}
@@ -1520,9 +1520,9 @@ outer2:
 
 		}
 
-		if k != -1 && node[0] >= optEgdes[k][0][0] && node[1] >= optEgdes[k][0][1] && node[0] <= optEgdes[k][1][0] && node[1] <= optEgdes[k][1][1] && (pos3 >= optEgdes[k][0][0] && pos4 >= optEgdes[k][0][1] && pos3 <= optEgdes[k][1][0] && pos4 <= optEgdes[k][1][1]) {
+		if k != -1 && node[0] >= optEdges[k][0][0] && node[1] >= optEdges[k][0][1] && node[0] <= optEdges[k][1][0] && node[1] <= optEdges[k][1][1] && (pos3 >= optEdges[k][0][0] && pos4 >= optEdges[k][0][1] && pos3 <= optEdges[k][1][0] && pos4 <= optEdges[k][1][1]) {
 
-			var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
+			var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
 
 			var alt = distances[node[0]*len(result[0])+node[1]] + distance
 
@@ -1536,7 +1536,7 @@ outer2:
 			return pre, distances, node, counterPOPS
 		}
 
-		var neighbours = getEdgesPosition(node[0], node[1])
+		var neighbours = GetEdgesPosition(result, node[0], node[1])
 
 	neig:
 		for k := 0; k <= len(neighbours)-1; k++ {
@@ -1546,12 +1546,12 @@ outer2:
 				continue neig
 			}
 
-			var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), getCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
+			var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
 
 			var alt = distances[node[0]*len(result[0])+node[1]] + distance
 
 			if alt < distances[neighbours[k][0]*len(result[0])+neighbours[k][1]] {
-				newItem := &Item{pos: neighbours[k], actualDistanceForAStar: alt, distancePriority: alt + GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]), getCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))}
+				newItem := &Item{pos: neighbours[k], actualDistanceForAStar: alt, distancePriority: alt + GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))}
 				pre[neighbours[k][0]*len(result[0])+neighbours[k][1]] = []int{node[0], node[1]}
 				distances[neighbours[k][0]*len(result[0])+neighbours[k][1]] = alt
 

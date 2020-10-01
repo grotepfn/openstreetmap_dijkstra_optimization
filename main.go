@@ -11,6 +11,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/grotepfn/openstreetmap_dijkstra_optimization/bitArray"
 )
 
 var result [][]bool
@@ -49,18 +50,18 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 		log.Println(error4)
 	}
 
-	var desPos = getArrayPositionFromCords(len(result), len(result[0]), laDes, lnDes)
+	var desPos = bitArray.GetArrayPositionFromCords(len(result), len(result[0]), laDes, lnDes)
 
-	var startPos = getArrayPositionFromCords(len(result), len(result[0]), la, ln)
+	var startPos = bitArray.GetArrayPositionFromCords(len(result), len(result[0]), la, ln)
 
-	var preDij, distancesDij, _, popsDij = dijkstra_single(startPos[0], startPos[1], desPos[0], desPos[1])
+	var preDij, distancesDij, _, popsDij = bitArray.Dijkstra_single(startPos[0], startPos[1], desPos[0], desPos[1], result)
 
-	var preDijBi, distancesDijBi, preDijBi2, distancesDijBi2, bestMeetingPoint, popsDijBi = dijkstra_bi(startPos[0], startPos[1], desPos[0], desPos[1])
-	var preDijOpt, distancesDijOpt, _, popsDijOpt = dijkstra_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges)
-	var preDijOptPre, distancesDijOptPre, _, popsDijOptPre = dijkstra_single_optimized_pre(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
-	var preAStar, distancesAStar, _, popsAStar = a_stern_single(startPos[0], startPos[1], desPos[0], desPos[1])
-	var preAStarOpt, distancesAStarOpt, _, popsAStarOpt = a_stern_single_optimized(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges)
-	var preAStarOptPre, distancesAStarOptPre, _, popsAStarOptPre = a_stern_single_optimized_with_pre(startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
+	var preDijBi, distancesDijBi, preDijBi2, distancesDijBi2, bestMeetingPoint, popsDijBi = bitArray.Dijkstra_bi(result, startPos[0], startPos[1], desPos[0], desPos[1])
+	var preDijOpt, distancesDijOpt, _, popsDijOpt = bitArray.Dijkstra_single_optimized(result, startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges)
+	var preDijOptPre, distancesDijOptPre, _, popsDijOptPre = bitArray.Dijkstra_single_optimized_pre(result, startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
+	var preAStar, distancesAStar, _, popsAStar = bitArray.A_stern_single(result, startPos[0], startPos[1], desPos[0], desPos[1])
+	var preAStarOpt, distancesAStarOpt, _, popsAStarOpt = bitArray.A_stern_single_optimized(result, startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges)
+	var preAStarOptPre, distancesAStarOptPre, _, popsAStarOptPre = bitArray.A_stern_single_optimized_with_pre(result, startPos[0], startPos[1], desPos[0], desPos[1], mapPointSquares, optEdges, distsOpt)
 
 	println("ergebnisse")
 	println("dijkstra single")
@@ -94,40 +95,40 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 	var way [][2]int
 	if algorithm == "dijkstra" {
 		println("dijkstra")
-		way = getShortestPath(desPos[0], desPos[1], preDij)
+		way = bitArray.GetShortestPath(result, desPos[0], desPos[1], preDij)
 		println(distancesDij[desPos[0]*len(result[0])+desPos[1]])
 	} else if algorithm == "astar" {
 		println("astern")
-		way = getShortestPath(desPos[0], desPos[1], preAStar)
+		way = bitArray.GetShortestPath(result, desPos[0], desPos[1], preAStar)
 		println(distancesAStar[desPos[0]*len(result[0])+desPos[1]])
 	} else if algorithm == "dijkstraOpt" {
 		println("dijkstra opt")
-		way = getShortestPath(desPos[0], desPos[1], preDijOpt)
+		way = bitArray.GetShortestPath(result, desPos[0], desPos[1], preDijOpt)
 		println(distancesDijOpt[desPos[0]*len(result[0])+desPos[1]])
 	} else if algorithm == "dijkstraOptWithPre" {
 		println("dijkstra opt with pre")
-		way = getShortestPath(desPos[0], desPos[1], preDijOptPre)
+		way = bitArray.GetShortestPath(result, desPos[0], desPos[1], preDijOptPre)
 		println(distancesDijOptPre[desPos[0]*len(result[0])+desPos[1]])
 	} else if algorithm == "astarOpt" {
 		println("astar opt")
-		way = getShortestPath(desPos[0], desPos[1], preAStarOpt)
+		way = bitArray.GetShortestPath(result, desPos[0], desPos[1], preAStarOpt)
 		println(distancesAStarOpt[desPos[0]*len(result[0])+desPos[1]])
 	} else if algorithm == "astarOptWithPre" {
 		println("astar opt with pre")
-		way = getShortestPath(desPos[0], desPos[1], preAStarOptPre)
+		way = bitArray.GetShortestPath(result, desPos[0], desPos[1], preAStarOptPre)
 		println(distancesAStarOptPre[desPos[0]*len(result[0])+desPos[1]])
 	} else if algorithm == "biDijkstra" {
 		println("dijkstra bi")
 		var wayCords [][2]float64
 
-		way = getShortestPath(bestMeetingPoint[0], bestMeetingPoint[1], preDijBi)
+		way = bitArray.GetShortestPath(result, bestMeetingPoint[0], bestMeetingPoint[1], preDijBi)
 
 		for i := 0; i <= len(way)-1; i++ {
 
-			wayCords = append(wayCords, getCordsFromArrayPosition(len(result), len(result[0]), way[i][0], way[i][1]))
+			wayCords = append(wayCords, bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), way[i][0], way[i][1]))
 		}
 
-		var way2 = getShortestPath(bestMeetingPoint[0], bestMeetingPoint[1], preDijBi2)
+		var way2 = bitArray.GetShortestPath(result, bestMeetingPoint[0], bestMeetingPoint[1], preDijBi2)
 
 		//https://stackoverflow.com/questions/19239449/how-do-i-reverse-an-array-in-go
 		for i, j := 0, len(way2)-1; i < j; i, j = i+1, j-1 {
@@ -143,7 +144,7 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 	var wayCords [][2]float64
 	for i := 0; i <= len(way)-1; i++ {
 
-		wayCords = append(wayCords, getCordsFromArrayPosition(len(result), len(result[0]), way[i][0], way[i][1]))
+		wayCords = append(wayCords, bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), way[i][0], way[i][1]))
 	}
 
 	var payload, err = json.Marshal(wayCords)

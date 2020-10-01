@@ -10,6 +10,8 @@ import (
 	"os"
 	"runtime/pprof"
 	"time"
+
+	"github.com/grotepfn/openstreetmap_dijkstra_optimization/bitArray"
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
@@ -112,7 +114,7 @@ func main() {
 
 	for i := 0; i <= -100; i++ {
 
-		var _, _, _, counter = dijkstra_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
+		var _, _, _, counter = bitArray.Dijkstra_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], result)
 		counterPOPS = counterPOPS + counter
 
 	}
@@ -128,7 +130,7 @@ func main() {
 
 	for i := 0; i <= -100; i++ {
 
-		var _, _, _, _, _, counter = dijkstra_bi(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
+		var _, _, _, _, _, counter = bitArray.Dijkstra_bi(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
 		counterPOPS = counterPOPS + counter
 
 	}
@@ -166,7 +168,7 @@ func main() {
 
 	for i := 0; i <= -100; i++ {
 
-		var _, _, _, counter = dijkstra_single_optimized(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
+		var _, _, _, counter = bitArray.Dijkstra_single_optimized(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
 
 		counterPOPS = counterPOPS + counter
 	}
@@ -182,7 +184,7 @@ func main() {
 
 	for i := 0; i <= -100; i++ {
 
-		var _, _, _, counter = dijkstra_single_optimized_pre(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
+		var _, _, _, counter = bitArray.Dijkstra_single_optimized_pre(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
 
 		counterPOPS = counterPOPS + counter
 	}
@@ -197,7 +199,7 @@ func main() {
 	counterPOPS = 0
 	for i := 0; i <= 100; i++ {
 
-		var _, _, _, counter = a_stern_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
+		var _, _, _, counter = bitArray.A_stern_single(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
 		counterPOPS = counterPOPS + counter
 
 	}
@@ -214,7 +216,7 @@ func main() {
 
 	for i := 0; i <= 100; i++ {
 
-		var _, _, _, counter = a_stern_single_optimized(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
+		var _, _, _, counter = bitArray.A_stern_single_optimized(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
 		counterPOPS = counterPOPS + counter
 
 	}
@@ -228,7 +230,7 @@ func main() {
 
 	for i := 0; i <= 100; i++ {
 
-		var _, _, _, counter = a_stern_single_optimized_with_pre(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
+		var _, _, _, counter = bitArray.A_stern_single_optimized_with_pre(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
 		counterPOPS = counterPOPS + counter
 
 	}
@@ -245,10 +247,10 @@ func main() {
 
 	for i := 0; i <= -1; i++ {
 
-		var _, dists, _, counter = a_stern_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
+		var _, dists, _, counter = bitArray.A_stern_single(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
 		counterPOPS = counterPOPS + counter
 
-		var _, dists2, _, _ = a_stern_single_optimized(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
+		var _, dists2, _, _ = bitArray.A_stern_single_optimized(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
 		counterPOPS = counterPOPS + counter
 
 		if dists2[rnd[i][2]*len(result[0])+rnd[i][3]] > dists[rnd[i][2]*len(result[0])+rnd[i][3]] {
@@ -262,18 +264,18 @@ func main() {
 	println("test")
 	for i := 0; i <= 100; i++ {
 
-		var _, dis, _, _ = dijkstra_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
+		var _, dis, _, _ = bitArray.Dijkstra_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], result)
 
-		var _, dis2, _, _ = a_stern_single_optimized_with_pre(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
+		var _, dis2, _, _ = bitArray.A_stern_single_optimized_with_pre(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
 
-		var _, dis3, _, _ = a_stern_single_optimized(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
+		var _, dis3, _, _ = bitArray.A_stern_single_optimized(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
 
 		if dis2[rnd[i][2]*len(result[0])+rnd[i][3]] > (dis[rnd[i][2]*len(result[0])+rnd[i][3]] + 0.1) {
 			println("error")
-			println(getCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[0])
-			println(getCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[1])
-			println(getCordsFromArrayPosition(len(result), len(result[0]), rnd[i][2], rnd[i][3])[0])
-			println(getCordsFromArrayPosition(len(result), len(result[0]), rnd[i][2], rnd[i][3])[1])
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[0])
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[1])
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][2], rnd[i][3])[0])
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][2], rnd[i][3])[1])
 		}
 		if dis3[rnd[i][2]*len(result[0])+rnd[i][3]] > dis[rnd[i][2]*len(result[0])+rnd[i][3]]+0.1 {
 			println("error2")

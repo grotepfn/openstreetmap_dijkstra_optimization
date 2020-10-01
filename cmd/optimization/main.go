@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	"github.com/grotepfn/openstreetmap_dijkstra_optimization/bitArray"
 )
 
 var result [][]bool
@@ -40,7 +42,7 @@ func main() {
 			for xAxis := sq[k][0][1]; xAxis <= sq[k][1][1]; xAxis++ {
 
 				//upper line
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], x), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], xAxis))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], x), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], xAxis))
 
 				var l = help
 				l = append(l, distance)
@@ -52,7 +54,7 @@ func main() {
 
 				//lower line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], x), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], xAxis))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], x), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], xAxis))
 
 				var l = help
 				l = append(l, distance)
@@ -66,7 +68,7 @@ func main() {
 
 				//left line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], x), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][0][1]))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], x), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][0][1]))
 
 				var l = help
 				l = append(l, distance)
@@ -77,7 +79,7 @@ func main() {
 			for yAxis := sq[k][0][0]; yAxis <= sq[k][1][0]; yAxis++ {
 				//right line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], x), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][1][1]))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], x), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][1][1]))
 
 				var l = help
 				l = append(l, distance)
@@ -94,7 +96,7 @@ func main() {
 			for xAxis := sq[k][0][1]; xAxis <= sq[k][1][1]; xAxis++ {
 
 				//upper line
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], x2), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], xAxis))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], x2), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], xAxis))
 
 				var l = help
 				l = append(l, distance)
@@ -104,7 +106,7 @@ func main() {
 			for xAxis := sq[k][0][1]; xAxis <= sq[k][1][1]; xAxis++ {
 				//lower line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], x2), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], xAxis))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], x2), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], xAxis))
 
 				var l = help
 				l = append(l, distance)
@@ -117,7 +119,7 @@ func main() {
 
 				//left line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], x2), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][0][1]))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], x2), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][0][1]))
 
 				var l = help
 				l = append(l, distance)
@@ -128,7 +130,7 @@ func main() {
 			for yAxis := sq[k][0][0]; yAxis <= sq[k][1][0]; yAxis++ {
 				//right line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], x2), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][1][1]))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], x2), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][1][1]))
 
 				var l = help
 				l = append(l, distance)
@@ -144,7 +146,7 @@ func main() {
 			for xAxis := sq[k][0][1]; xAxis <= sq[k][1][1]; xAxis++ {
 
 				//upper line
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y, sq[k][0][1]), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], xAxis))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), y, sq[k][0][1]), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], xAxis))
 
 				var l = help
 				l = append(l, distance)
@@ -154,7 +156,7 @@ func main() {
 
 				//lower line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y, sq[k][0][1]), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], xAxis))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), y, sq[k][0][1]), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], xAxis))
 				var l = help
 				l = append(l, distance)
 
@@ -167,7 +169,7 @@ func main() {
 
 				//left line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y, sq[k][0][1]), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][0][1]))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), y, sq[k][0][1]), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][0][1]))
 
 				var l = help
 				l = append(l, distance)
@@ -178,7 +180,7 @@ func main() {
 
 				//right line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y, sq[k][0][1]), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][1][1]))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), y, sq[k][0][1]), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][1][1]))
 				var l = help
 				l = append(l, distance)
 
@@ -192,7 +194,7 @@ func main() {
 			for xAxis := sq[k][0][1]; xAxis <= sq[k][1][1]; xAxis++ {
 
 				//upper line
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y2, sq[k][1][1]), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], xAxis))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), y2, sq[k][1][1]), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][0][0], xAxis))
 
 				var l = help
 				l = append(l, distance)
@@ -203,7 +205,7 @@ func main() {
 			for xAxis := sq[k][0][1]; xAxis <= sq[k][1][1]; xAxis++ {
 				//lower line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y2, sq[k][1][1]), getCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], xAxis))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), y2, sq[k][1][1]), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[k][1][0], xAxis))
 
 				var l = help
 				l = append(l, distance)
@@ -217,7 +219,7 @@ func main() {
 
 				//left line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y2, sq[k][1][1]), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][0][1]))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), y2, sq[k][1][1]), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][0][1]))
 				var l = help
 				l = append(l, distance)
 
@@ -227,7 +229,7 @@ func main() {
 
 				//right line
 
-				var distance = GreatCircleDistance(getCordsFromArrayPosition(len(result), len(result[0]), y2, sq[k][1][1]), getCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][1][1]))
+				var distance = bitArray.GreatCircleDistance(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), y2, sq[k][1][1]), bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), yAxis, sq[k][1][1]))
 				var l = help
 				l = append(l, distance)
 

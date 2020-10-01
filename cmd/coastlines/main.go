@@ -269,7 +269,7 @@ func isCrossing(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
 	var A2 = 0.0
 	var ln = 0.0
 	if (P2 - B2) < -180 {
-		ln = modLikePythonFloat((P2 - B2), 180.0)
+		ln = ModLikePythonFloat((P2 - B2), 180.0)
 	} else if (P2 - B2) > 180 {
 		ln = -180 + (P2 - B2 - 180)
 	} else {
@@ -278,7 +278,7 @@ func isCrossing(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
 
 	P2 = ln
 	if (A2 - B2) < -180 {
-		ln = modLikePythonFloat((A2 - B2), 180.0)
+		ln = ModLikePythonFloat((A2 - B2), 180.0)
 	} else if (A2 - B2) > 180 {
 		ln = -180 + (A2 - B2 - 180)
 	} else {
@@ -286,7 +286,7 @@ func isCrossing(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
 	}
 
 	if (X2 - B2) < -180 {
-		ln = modLikePythonFloat((X2 - B2), 180.0)
+		ln = ModLikePythonFloat((X2 - B2), 180.0)
 	} else if (X2 - B2) > 180 {
 		ln = -180 + (X2 - B2 - 180)
 	} else {
@@ -311,7 +311,7 @@ func azimuthMiddle(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint, c bool) bool 
 	P2 = P.lng
 	if c {
 
-		var da = getArrayPositionFromCords(len(bitArray), len(bitArray[0]), P.lat, P.lng)
+		var da = GetArrayPositionFromCords(len(bitArray), len(bitArray[0]), P.lat, P.lng)
 		P2 = preRotateBitArray[da[0]*len(bitArray[0])+da[1]]
 		//P2 = rotateLng(P, X)
 	}
@@ -332,7 +332,7 @@ func azimuthMiddle(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint, c bool) bool 
 
 	var ln = 0.0
 	if (P2 - B2) < -180 {
-		ln = modLikePythonFloat((P2 - B2), 180.0)
+		ln = ModLikePythonFloat((P2 - B2), 180.0)
 	} else if (P2 - B2) > 180 {
 		ln = -180 + (P2 - B2 - 180)
 	} else {
@@ -342,7 +342,7 @@ func azimuthMiddle(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint, c bool) bool 
 	P2 = ln
 
 	if (A2 - B2) < -180 {
-		ln = modLikePythonFloat((A2 - B2), 180.0)
+		ln = ModLikePythonFloat((A2 - B2), 180.0)
 	} else if (A2 - B2) > 180 {
 		ln = -180 + (A2 - B2 - 180)
 	} else {
@@ -454,7 +454,7 @@ func fillBitArray() {
 			defer wg.Done()
 			for j := 0; j <= len(bitArray[i])-1; j++ {
 
-				var bla = getCordsFromArrayPosition(len(bitArray), len(bitArray[0]), i, j)
+				var bla = GetCordsFromArrayPosition(len(bitArray), len(bitArray[0]), i, j)
 				var x = GeoPoint{bla[0], bla[1]}
 				bitArray[i][j] = isPointInWater(x)
 
@@ -488,7 +488,7 @@ func fillRotMap() {
 			defer wg.Done()
 			for j := 0; j <= len(bitArray[0])-1; j++ {
 
-				var x = getCordsFromArrayPosition(len(bitArray), len(bitArray[0]), i, j)
+				var x = GetCordsFromArrayPosition(len(bitArray), len(bitArray[0]), i, j)
 				var z = rotateLng(GeoPoint{x[0], x[1]}, pointInWater2)
 				preRotateBitArray[i*len(bitArray[0])+j] = z
 			}
