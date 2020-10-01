@@ -35,8 +35,8 @@ func ModLikePythonFloat(d, m float64) float64 {
 }
 
 type GeoPoint struct {
-	lat float64
-	lng float64
+	Lat float64
+	Lng float64
 }
 
 //https://github.com/kellydunn/golang-geo/blob/master/point.go

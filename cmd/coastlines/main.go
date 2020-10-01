@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"io"
-	"io/ioutil"
 	"log"
 	"math"
 	"os"
@@ -12,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/grotepfn/openstreetmap_dijkstra_optimization/bitArray"
 	"github.com/qedus/osmpbf"
 )
 
@@ -21,14 +20,14 @@ var mapNodesBeginsWith = make(map[int64]int)
 var polygon [][][2]float64
 var nc, wc, rc uint64
 var pointInPolygon [][2]float64
-var pointInWater GeoPoint
-var pointInWater2 GeoPoint
+var pointInWater bitArray.GeoPoint
+var pointInWater2 bitArray.GeoPoint
 
-var bitArray [50][100]bool
+var result [20][20]bool
 
 var boundingBox [][4]float64
 
-var preRotateBitArray [len(bitArray[0]) * len(bitArray)]float64
+var preRotateresult [len(result[0]) * len(result)]float64
 var lock = sync.RWMutex{}
 var mapPreCalcPoly = make(map[[2]float64]float64)
 
@@ -36,15 +35,15 @@ func main() {
 	println("numcpus " + strconv.Itoa(runtime.NumCPU()))
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	pointInWater = GeoPoint{90, 0}
+	pointInWater = bitArray.GeoPoint{90, 0}
 
-	pointInWater2 = GeoPoint{-20.3034175184893, -10.546875}
+	pointInWater2 = bitArray.GeoPoint{-20.3034175184893, -10.546875}
 
 	t := time.Now()
 
 	println("starting at " + t.String())
 
-	f, err := os.Open("data/antarctica-latest.osm.pbf")
+	f, err := os.Open("data/planet-coastlines.pbf")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -87,13 +86,13 @@ func main() {
 	fillRotMap()
 	fillRotMap2()
 
-	fillBitArray()
+	fillresult()
 
 	t = time.Now()
 	println(t.String())
 
-	jsonString1, _ := json.Marshal(bitArray)
-	ioutil.WriteFile("data/bitArray", jsonString1, 0644)
+	//jsonString1, _ := json.Marshal(result)
+	//ioutil.WriteFile("data/result", jsonString1, 0644)
 
 }
 
@@ -236,14 +235,14 @@ func createPolygon() {
 
 }
 
-func isCrossing(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
+func isCrossing(X bitArray.GeoPoint, P bitArray.GeoPoint, A bitArray.GeoPoint, B bitArray.GeoPoint) bool {
 
 	//https://gis.stackexchange.com/questions/10808/manually-transforming-rotated-lat-lon-to-regular-lat-lon
 
 	//A, B and X on the same longitude or P antipodal to X
 
 	var t = false
-	if A.lng == B.lng || A.lng == P.lng || B.lng == P.lng || X.lng == A.lng || X.lng == B.lng || X.lng == P.lng || P.lng == -180 || P.lng == -90 || P.lng == 90 {
+	if A.Lng == B.Lng || A.Lng == P.Lng || B.Lng == P.Lng || X.Lng == A.Lng || X.Lng == B.Lng || X.Lng == P.Lng || P.Lng == -180 || P.Lng == -90 || P.Lng == 90 {
 		//	println("hier")
 		X = pointInWater2
 
@@ -269,7 +268,7 @@ func isCrossing(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
 	var A2 = 0.0
 	var ln = 0.0
 	if (P2 - B2) < -180 {
-		ln = ModLikePythonFloat((P2 - B2), 180.0)
+		ln = bitArray.ModLikePythonFloat((P2 - B2), 180.0)
 	} else if (P2 - B2) > 180 {
 		ln = -180 + (P2 - B2 - 180)
 	} else {
@@ -278,7 +277,7 @@ func isCrossing(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
 
 	P2 = ln
 	if (A2 - B2) < -180 {
-		ln = ModLikePythonFloat((A2 - B2), 180.0)
+		ln = bitArray.ModLikePythonFloat((A2 - B2), 180.0)
 	} else if (A2 - B2) > 180 {
 		ln = -180 + (A2 - B2 - 180)
 	} else {
@@ -286,7 +285,7 @@ func isCrossing(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
 	}
 
 	if (X2 - B2) < -180 {
-		ln = ModLikePythonFloat((X2 - B2), 180.0)
+		ln = bitArray.ModLikePythonFloat((X2 - B2), 180.0)
 	} else if (X2 - B2) > 180 {
 		ln = -180 + (X2 - B2 - 180)
 	} else {
@@ -305,34 +304,34 @@ func isCrossing(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint) bool {
 	return false
 }
 
-func azimuthMiddle(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint, c bool) bool {
+func azimuthMiddle(X bitArray.GeoPoint, P bitArray.GeoPoint, A bitArray.GeoPoint, B bitArray.GeoPoint, c bool) bool {
 
 	var P2 float64
-	P2 = P.lng
+	P2 = P.Lng
 	if c {
 
-		var da = GetArrayPositionFromCords(len(bitArray), len(bitArray[0]), P.lat, P.lng)
-		P2 = preRotateBitArray[da[0]*len(bitArray[0])+da[1]]
+		var da = bitArray.GetArrayPositionFromCords(len(result), len(result[0]), P.Lat, P.Lng)
+		P2 = preRotateresult[da[0]*len(result[0])+da[1]]
 		//P2 = rotateLng(P, X)
 	}
 
 	var A2 float64
-	A2 = A.lng
+	A2 = A.Lng
 	if c {
 		//A2 = rotateLng(A, X)
-		A2 = mapPreCalcPoly[[2]float64{A.lat, A.lng}]
+		A2 = mapPreCalcPoly[[2]float64{A.Lat, A.Lng}]
 	}
 
 	var B2 float64
-	B2 = B.lng
+	B2 = B.Lng
 	if c {
 		//B2 = rotateLng(B, X)
-		B2 = mapPreCalcPoly[[2]float64{B.lat, B.lng}]
+		B2 = mapPreCalcPoly[[2]float64{B.Lat, B.Lng}]
 	}
 
 	var ln = 0.0
 	if (P2 - B2) < -180 {
-		ln = ModLikePythonFloat((P2 - B2), 180.0)
+		ln = bitArray.ModLikePythonFloat((P2 - B2), 180.0)
 	} else if (P2 - B2) > 180 {
 		ln = -180 + (P2 - B2 - 180)
 	} else {
@@ -342,7 +341,7 @@ func azimuthMiddle(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint, c bool) bool 
 	P2 = ln
 
 	if (A2 - B2) < -180 {
-		ln = ModLikePythonFloat((A2 - B2), 180.0)
+		ln = bitArray.ModLikePythonFloat((A2 - B2), 180.0)
 	} else if (A2 - B2) > 180 {
 		ln = -180 + (A2 - B2 - 180)
 	} else {
@@ -362,13 +361,13 @@ func azimuthMiddle(X GeoPoint, P GeoPoint, A GeoPoint, B GeoPoint, c bool) bool 
 
 }
 
-func checkPolygon(X GeoPoint, P GeoPoint, B [][2]float64) bool {
+func checkPolygon(X bitArray.GeoPoint, P bitArray.GeoPoint, B [][2]float64) bool {
 	var counter = 0
 
 	for i := 0; i <= len(B)-2; i++ {
 
 		//lat lon geojson format
-		if isCrossing(X, P, GeoPoint{B[i][1], B[i][0]}, GeoPoint{B[i+1][1], B[i+1][0]}) {
+		if isCrossing(X, P, bitArray.GeoPoint{B[i][1], B[i][0]}, bitArray.GeoPoint{B[i+1][1], B[i+1][0]}) {
 
 			counter++
 		}
@@ -388,11 +387,11 @@ func fillMap() {
 
 }
 
-func isPointInWater(point GeoPoint) bool {
+func isPointInWater(point bitArray.GeoPoint) bool {
 
 	for i := 0; i <= len(polygon)-1; i++ {
 
-		if point.lng >= boundingBox[i][0] && point.lng <= boundingBox[i][1] && point.lat >= boundingBox[i][2] && point.lat <= boundingBox[i][3] { //|| (point.lng <= -160 && boundingBox[i][2] >= 179) {
+		if point.Lng >= boundingBox[i][0] && point.Lng <= boundingBox[i][1] && point.Lat >= boundingBox[i][2] && point.Lat <= boundingBox[i][3] { //|| (point.lng <= -160 && boundingBox[i][2] >= 179) {
 
 			if checkPolygon(pointInWater, point, polygon[i]) == false {
 
@@ -406,10 +405,10 @@ func isPointInWater(point GeoPoint) bool {
 
 }
 
-func rotateLng(P GeoPoint, X GeoPoint) float64 {
+func rotateLng(P bitArray.GeoPoint, X bitArray.GeoPoint) float64 {
 
-	var latX = X.lat
-	var lonX = X.lng
+	var latX = X.Lat
+	var lonX = X.Lng
 
 	latX = -latX
 
@@ -422,8 +421,8 @@ func rotateLng(P GeoPoint, X GeoPoint) float64 {
 		lonX = 180
 	}
 
-	var lon = (P.lng * math.Pi) / 180
-	var lat = (P.lat * math.Pi) / 180
+	var lon = (P.Lng * math.Pi) / 180
+	var lat = (P.Lat * math.Pi) / 180
 
 	var x = math.Cos(lon) * math.Cos(lat)
 	var y = math.Sin(lon) * math.Cos(lat)
@@ -443,20 +442,20 @@ func rotateLng(P GeoPoint, X GeoPoint) float64 {
 	return newLng
 }
 
-func fillBitArray() {
+func fillresult() {
 
 	var wg sync.WaitGroup
-	wg.Add(len(bitArray))
+	wg.Add(len(result))
 
-	for i := 0; i <= len(bitArray)-1; i++ {
+	for i := 0; i <= len(result)-1; i++ {
 
 		go func(i int) {
 			defer wg.Done()
-			for j := 0; j <= len(bitArray[i])-1; j++ {
+			for j := 0; j <= len(result[i])-1; j++ {
 
-				var bla = GetCordsFromArrayPosition(len(bitArray), len(bitArray[0]), i, j)
-				var x = GeoPoint{bla[0], bla[1]}
-				bitArray[i][j] = isPointInWater(x)
+				var bla = bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), i, j)
+				var x = bitArray.GeoPoint{bla[0], bla[1]}
+				result[i][j] = isPointInWater(x)
 
 			}
 
@@ -464,10 +463,10 @@ func fillBitArray() {
 	}
 	wg.Wait()
 
-	for i := 0; i <= len(bitArray)-1; i = i + 1 {
-		for j := 0; j <= len(bitArray[i])-1; j = j + 1 {
+	for i := 0; i <= len(result)-1; i = i + 1 {
+		for j := 0; j <= len(result[i])-1; j = j + 1 {
 
-			if bitArray[i][j] {
+			if result[i][j] {
 				print(" ")
 
 			} else {
@@ -481,16 +480,16 @@ func fillBitArray() {
 func fillRotMap() {
 
 	var wg sync.WaitGroup
-	wg.Add(len(bitArray))
-	for i := 0; i <= len(bitArray)-1; i++ {
+	wg.Add(len(result))
+	for i := 0; i <= len(result)-1; i++ {
 
 		go func(i int) {
 			defer wg.Done()
-			for j := 0; j <= len(bitArray[0])-1; j++ {
+			for j := 0; j <= len(result[0])-1; j++ {
 
-				var x = GetCordsFromArrayPosition(len(bitArray), len(bitArray[0]), i, j)
-				var z = rotateLng(GeoPoint{x[0], x[1]}, pointInWater2)
-				preRotateBitArray[i*len(bitArray[0])+j] = z
+				var x = bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), i, j)
+				var z = rotateLng(bitArray.GeoPoint{x[0], x[1]}, pointInWater2)
+				preRotateresult[i*len(result[0])+j] = z
 			}
 		}(i)
 
@@ -507,7 +506,7 @@ func fillRotMap2() {
 			for j := 0; j <= len(polygon[i])-1; j++ {
 				var x = polygon[i][j]
 				//CAUTION 1 0
-				var z = rotateLng(GeoPoint{x[1], x[0]}, pointInWater2)
+				var z = rotateLng(bitArray.GeoPoint{x[1], x[0]}, pointInWater2)
 
 				lock.Lock()
 				mapPreCalcPoly[[2]float64{x[1], x[0]}] = z
