@@ -22,7 +22,7 @@ type PriorityQueue []*Item
 func (pq PriorityQueue) Len() int { return len(pq) }
 
 func (pq PriorityQueue) Less(i, j int) bool {
-	// We want Pop to give us the highest, not lowest, priority so we use greater than here.
+	// We want Pop to give us the lowest, not highest, priority so we use smaller than here.
 	return pq[i].distancePriority < pq[j].distancePriority
 }
 
@@ -62,13 +62,13 @@ func (pq *PriorityQueue) update(item *Item, pos [2]int, distance float64) {
 //func dijktstra_minheap(pos1, pos2, pos3, pos4 int) ([][][]int, [][]float64) {
 //}
 
-//https://dev.to/douglasmakey/implementation-of-dijkstra-using-heap-in-go-6e3
+//Implementation fo Dijkstras algorithm without optimization https://dev.to/douglasmakey/implementation-of-dijkstra-using-heap-in-go-6e3
 func Dijkstra_single(pos1, pos2, pos3, pos4 int, result [][]bool) ([][]int, []float64, [2]int, int) {
 
 	var counterPOPS = 0
 
 	distances := make([]float64, len(result)*len(result[0]))
-	suchraum := make([]int, len(result)*len(result[0]))
+
 	pq := make(PriorityQueue, 0)
 	pre := make([][]int, len(result)*len(result[0]))
 
@@ -82,7 +82,7 @@ func Dijkstra_single(pos1, pos2, pos3, pos4 int, result [][]bool) ([][]int, []fl
 		for j := 0; j <= len(result[i])-1; j++ {
 
 			distances[i*(len(result[0]))+j] = math.MaxFloat64
-			suchraum[i*(len(result[0]))+j] = 0
+
 			pre[i*(len(result[0]))+j] = []int{-1, -1}
 
 			if i == pos1 && j == pos2 {
@@ -107,15 +107,13 @@ func Dijkstra_single(pos1, pos2, pos3, pos4 int, result [][]bool) ([][]int, []fl
 		p := heap.Pop(&pq).(*Item)
 		counterPOPS++
 		node = p.pos
-		var x = suchraum[node[0]*len(result[0])+node[1]]
-		x++
-		suchraum[node[0]*len(result[0])+node[1]] = x
+
 		if pre[node[0]*len(result[0])+node[1]][0] != -1 && p.distancePriority > distances[node[0]*len(result[0])+node[1]] {
 
 			continue
 		}
 
-		var neighbours = GetEdgesPosition(result, node[0], node[1])
+		var neighbours = GetEdges(result, node[0], node[1])
 		for k := 0; k <= len(neighbours)-1; k++ {
 
 			var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
@@ -135,19 +133,6 @@ func Dijkstra_single(pos1, pos2, pos3, pos4 int, result [][]bool) ([][]int, []fl
 
 		if node[0] == pos3 && node[1] == pos4 {
 
-			for i := 0; i <= len(result)-1; i = i + 10 {
-				for j := 0; j <= len(result[i])-1; j = j + 10 {
-
-					if suchraum[i*len(result[0])+j] > 0 {
-						//		print(strconv.Itoa(suchraum[i*len(result[0])+j]))
-
-					} else {
-						//		print(" ")
-					}
-				}
-				//	println("")
-			}
-
 			return pre, distances, node, counterPOPS
 
 		}
@@ -158,6 +143,7 @@ func Dijkstra_single(pos1, pos2, pos3, pos4 int, result [][]bool) ([][]int, []fl
 
 }
 
+//A star implementation optimized without precalculation of the distances between the points of the optimization squares
 func A_stern_single_optimized(result [][]bool, pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int]int, optEgdes [][2][2]int) ([][]int, []float64, [2]int, int) {
 
 	var visitedSquares = map[int]bool{}
@@ -204,9 +190,7 @@ func A_stern_single_optimized(result [][]bool, pos1, pos2, pos3, pos4 int, mapPo
 	distances[pos1*(len(result[0]))+pos2] = 0
 
 	var node [2]int
-	//var counter = 0
 
-outer2:
 	for pq.Len() > 0 {
 
 		// Find the nearest yet to visit node
@@ -214,7 +198,6 @@ outer2:
 		counterPOPS++
 		node = p.pos
 		var isOptimized = p.optimized
-		suchraum[node[0]*len(result[0])+node[1]] = true
 
 		if pre[node[0]*len(result[0])+node[1]][0] != -1 && p.actualDistanceForAStar > distances[node[0]*len(result[0])+node[1]] {
 
@@ -223,17 +206,12 @@ outer2:
 
 		if visitedPoints[node[0]*len(result[0])+node[1]] == true {
 
-			continue outer2
+			continue
 		}
 
 		var k = -1
 		var ok = false
 		k, ok = mapPointSquares[[2]int{node[0], node[1]}]
-
-		//var bestSquareDist = math.MaxFloat64
-
-		//node within square and dest pos not within square
-		//	println(len(mapPointSquares[[2]int{node[0], node[1]}]))
 
 		if !isOptimized && ok && node[0] >= optEgdes[k][0][0] && node[1] >= optEgdes[k][0][1] && node[0] <= optEgdes[k][1][0] && node[1] <= optEgdes[k][1][1] && ((pos3 < optEgdes[k][0][0] || pos4 < optEgdes[k][0][1]) || (pos3 > optEgdes[k][1][0] || pos4 > optEgdes[k][1][1])) && (node[0] == optEgdes[k][0][0] || node[1] == optEgdes[k][0][1] || node[0] == optEgdes[k][1][0] || node[1] == optEgdes[k][1][1]) {
 			if !visitedSquares[k] {
@@ -330,48 +308,13 @@ outer2:
 			//set nodes within negative
 			for yAxis := optEgdes[k][0][0] + 1; yAxis < optEgdes[k][1][0]; yAxis++ {
 				for xAxis := optEgdes[k][0][1] + 1; xAxis < optEgdes[k][1][1]; xAxis++ {
-
-					//	pre[yAxis*len(result[0])+xAxis] = []int{node[0], node[1]}
-					//distances[yAxis*len(result[0])+xAxis] = -3
 					visitedPoints[yAxis*len(result[0])+xAxis] = true
 				}
 			}
 
-			//continue outer2
-
 		}
-		/*
-			if k != -1 && node[0] >= optEgdes[k][0][0] && node[1] >= optEgdes[k][0][1] && node[0] <= optEgdes[k][1][0] && node[1] <= optEgdes[k][1][1] && (pos3 >= optEgdes[k][0][0] && pos4 >= optEgdes[k][0][1] && pos3 <= optEgdes[k][1][0] && pos4 <= optEgdes[k][1][1]) {
 
-				var distance = GreatCircleDistance(GetCordsFromArrayPosition(result, node[0], node[1]), GetCordsFromArrayPosition(result, pos3, pos4))
-
-				var alt = distances[node[0]*len(result[0])+node[1]] + distance
-				//var alt2 = alt + GreatCircleDistance(GetCordsFromArrayPosition(result, neighbours[k][0], neighbours[k][1]), GetCordsFromArrayPosition(result, pos3, pos4))
-
-				if alt <= distances[pos3*len(result[0])+pos4] {
-
-					pre[pos3*len(result[0])+pos4] = []int{node[0], node[1]}
-					distances[pos3*len(result[0])+pos4] = alt
-
-				}
-				println("optimized amount")
-				for i := 0; i <= len(result)-1; i = i + 10 {
-					for j := 0; j <= len(result[i])-1; j = j + 10 {
-
-						if suchraum[i*len(result[0])+j] == true {
-							print("X")
-						} else {
-							print(" ")
-						}
-					}
-					println("")
-				}
-				println("optimized amount")
-				println(optimizedAmount)
-				return pre, distances, node, counterPOPS
-			}
-		*/
-		var neighbours = GetEdgesPosition(result, node[0], node[1])
+		var neighbours = GetEdges(result, node[0], node[1])
 
 	neig:
 		for k := 0; k <= len(neighbours)-1; k++ {
@@ -384,7 +327,6 @@ outer2:
 			var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]))
 
 			var alt = distances[node[0]*len(result[0])+node[1]] + distance
-			//var alt2 = alt + GreatCircleDistance(GetCordsFromArrayPosition(result, neighbours[k][0], neighbours[k][1]), GetCordsFromArrayPosition(result, pos3, pos4))
 
 			if alt < distances[neighbours[k][0]*len(result[0])+neighbours[k][1]] {
 				newItem := &Item{pos: neighbours[k], actualDistanceForAStar: alt, distancePriority: alt + GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), neighbours[k][0], neighbours[k][1]), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))}
@@ -399,18 +341,6 @@ outer2:
 
 		if node[0] == pos3 && node[1] == pos4 {
 
-			for i := 0; i <= len(result)-1; i = i + 10 {
-				for j := 0; j <= len(result[i])-1; j = j + 10 {
-
-					if suchraum[i*len(result[0])+j] == true {
-						//print("X")
-					} else {
-						//	print(" ")
-					}
-				}
-				//	println("")
-			}
-
 			return pre, distances, node, counterPOPS
 
 		}
@@ -421,10 +351,11 @@ outer2:
 
 }
 
+//Dijkstra implementation optimized with precalculation of the distances between the points of the optimization squares
 func Dijkstra_single_optimized_pre(result [][]bool, pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int]int, optEdges [][2][2]int, dists [][][]float64) ([][]int, []float64, [2]int, int) {
 
 	var visitedSquares = map[int]bool{}
-	suchraum := make([]int, len(result)*len(result[0]))
+
 	var counterPOPS = 0
 	var optimizedAmount = 0
 	distances := make([]float64, len(result)*len(result[0]))
@@ -446,8 +377,6 @@ func Dijkstra_single_optimized_pre(result [][]bool, pos1, pos2, pos3, pos4 int, 
 
 			distances[i*len(result[0])+j] = math.MaxFloat64
 
-			suchraum[i*len(result[0])+j] = 0
-
 			visitedPoints[i*len(result[0])+j] = false
 
 			pre[i*(len(result[0]))+j] = []int{-1, -1}
@@ -467,18 +396,8 @@ func Dijkstra_single_optimized_pre(result [][]bool, pos1, pos2, pos3, pos4 int, 
 	distances[pos1*(len(result[0]))+pos2] = 0
 
 	var node [2]int
-	//var counter = 0
-	var c = 0
-outer2:
+
 	for pq.Len() > 0 {
-
-		//println(pq.Len())
-		if c%1000 == 0 {
-			//	println(pq.Len())
-
-		}
-		c++
-		// Find the nearest yet to visit node
 
 		p := heap.Pop(&pq).(*Item)
 
@@ -486,23 +405,14 @@ outer2:
 		counterPOPS++
 		var isOptimized = p.optimized
 		if pre[node[0]*len(result[0])+node[1]][0] != -1 && (p.distancePriority) > distances[node[0]*len(result[0])+node[1]] {
-			//	println("hi")
-			counterPOPS--
+
 			continue
 		}
 
 		if visitedPoints[node[0]*len(result[0])+node[1]] != false {
-			counterPOPS--
 
-			//println(node[0])
-			//println(node[1])
-
-			continue outer2
+			continue
 		}
-
-		var x = suchraum[node[0]*len(result[0])+node[1]]
-		x++
-		suchraum[node[0]*len(result[0])+node[1]] = x
 
 		//var bestSquareDist = math.MaxFloat64
 		var k = -1
@@ -519,47 +429,40 @@ outer2:
 
 			var zahl = 0
 
-			var gefunden = false
+			var foundSquarePoint = false
 			//oben
-			if !gefunden && node[1] >= optEdges[k][0][1] && node[1] <= optEdges[k][1][1] && node[0] == optEdges[k][0][0] {
+			if !foundSquarePoint && node[1] >= optEdges[k][0][1] && node[1] <= optEdges[k][1][1] && node[0] == optEdges[k][0][0] {
 
 				zahl = zahl + node[1] - optEdges[k][0][1]
-				gefunden = true
-			} else if !gefunden {
+				foundSquarePoint = true
+			} else if !foundSquarePoint {
 				zahl = zahl + optEdges[k][1][1] - optEdges[k][0][1] + 1
 			}
 
 			//unten
-			if !gefunden && node[1] >= optEdges[k][0][1] && node[1] <= optEdges[k][1][1] && node[0] == optEdges[k][1][0] {
+			if !foundSquarePoint && node[1] >= optEdges[k][0][1] && node[1] <= optEdges[k][1][1] && node[0] == optEdges[k][1][0] {
 
 				zahl = zahl + node[1] - optEdges[k][0][1]
-				gefunden = true
-			} else if !gefunden {
+				foundSquarePoint = true
+			} else if !foundSquarePoint {
 				zahl = zahl + optEdges[k][1][1] - optEdges[k][0][1] + 1
 			}
 
 			//links
-			if !gefunden && node[0] >= optEdges[k][0][0] && node[0] <= optEdges[k][1][0] && node[1] == optEdges[k][0][1] {
+			if !foundSquarePoint && node[0] >= optEdges[k][0][0] && node[0] <= optEdges[k][1][0] && node[1] == optEdges[k][0][1] {
 
 				zahl = zahl + node[0] - optEdges[k][0][0]
-				gefunden = true
-			} else if !gefunden {
+				foundSquarePoint = true
+			} else if !foundSquarePoint {
 				zahl = zahl + optEdges[k][1][0] - optEdges[k][0][0] + 1
 			}
 
 			//rechts
-			if !gefunden && node[0] >= optEdges[k][0][0] && node[0] <= optEdges[k][1][0] && node[1] == optEdges[k][1][1] {
+			if !foundSquarePoint && node[0] >= optEdges[k][0][0] && node[0] <= optEdges[k][1][0] && node[1] == optEdges[k][1][1] {
 
 				zahl = zahl + node[0] - optEdges[k][0][0]
-				gefunden = true
-			} else if !gefunden {
-				/*	println("ssad")
-					println(node[0])
-					println(node[1])
-					println(optEdges[k][0][0])
-					println(optEdges[k][0][0])
-					println(optEdges[k][1][0])
-					println(optEdges[k][1][1])*/
+				foundSquarePoint = true
+			} else if !foundSquarePoint {
 
 				zahl = zahl + optEdges[k][1][0] - optEdges[k][0][0]
 			}
@@ -640,26 +543,6 @@ outer2:
 
 			}
 
-			/*
-
-				for i := 0; i <= optEdges[k][1][1]-optEdges[k][0][1]; i++ {
-
-					var distance = help[i]
-
-					var alt = distances[node[0]*len(result[0])+node[1]] + distance
-
-					if alt < distances[(optEdges[k][0][1]+i)*len(result[0])+optEdges[k][1][1]] {
-
-						newItem := &Item{pos: [2]int{optEdges[k][0][1] + i, optEdges[k][1][1]}, distance: -alt, optimized: true}
-						pre[(optEdges[k][0][1]+i)*len(result[0])+optEdges[k][1][1]] = []int{node[0], node[1]}
-						distances[(optEdges[k][0][1]+i)*len(result[0])+optEdges[k][1][1]] = alt
-
-						heap.Push(&pq, newItem)
-
-					}
-
-				}*/
-
 			//set nodes within negative
 			for yAxis := optEdges[k][0][0] + 1; yAxis < optEdges[k][1][0]; yAxis++ {
 				for xAxis := optEdges[k][0][1] + 1; xAxis < optEdges[k][1][1]; xAxis++ {
@@ -668,41 +551,9 @@ outer2:
 				}
 			}
 
-			//continue outer2
-
 		}
-		/*
-			if k != -1 && node[0] >= optEgdes[k][0][0] && node[1] >= optEgdes[k][0][1] && node[0] <= optEgdes[k][1][0] && node[1] <= optEgdes[k][1][1] && (pos3 >= optEgdes[k][0][0] && pos4 >= optEgdes[k][0][1] && pos3 <= optEgdes[k][1][0] && pos4 <= optEgdes[k][1][1]) {
 
-				var distance = GreatCircleDistance(GetCordsFromArrayPosition(result, node[0], node[1]), GetCordsFromArrayPosition(result, pos3, pos4))
-
-				var alt = distances[node[0]*len(result[0])+node[1]] + distance
-				//var alt2 = alt + GreatCircleDistance(GetCordsFromArrayPosition(result, neighbours[k][0], neighbours[k][1]), GetCordsFromArrayPosition(result, pos3, pos4))
-
-				if alt <= distances[pos3*len(result[0])+pos4] {
-
-					pre[pos3*len(result[0])+pos4] = []int{node[0], node[1]}
-					distances[pos3*len(result[0])+pos4] = alt
-
-				}
-				println("optimized amount")
-				for i := 0; i <= len(result)-1; i = i + 10 {
-					for j := 0; j <= len(result[i])-1; j = j + 10 {
-
-						if suchraum[i*len(result[0])+j] == true {
-							print("X")
-						} else {
-							print(" ")
-						}
-					}
-					println("")
-				}
-				println("optimized amount")
-				println(optimizedAmount)
-				return pre, distances, node, counterPOPS
-			}
-		*/
-		var neighbours = GetEdgesPosition(result, node[0], node[1])
+		var neighbours = GetEdges(result, node[0], node[1])
 
 	neig:
 		for k := 0; k <= len(neighbours)-1; k++ {
@@ -721,12 +572,7 @@ outer2:
 				newItem := &Item{pos: neighbours[k], distancePriority: alt}
 				pre[neighbours[k][0]*len(result[0])+neighbours[k][1]] = []int{node[0], node[1]}
 				distances[neighbours[k][0]*len(result[0])+neighbours[k][1]] = alt
-				if visitedPoints[neighbours[k][0]*len(result[0])+neighbours[k][1]] == true {
-					println("fehler11111111222222222222233333333")
-					println(node[0])
-					println(node[1])
 
-				}
 				heap.Push(&pq, newItem)
 
 			}
@@ -745,6 +591,7 @@ outer2:
 
 }
 
+//A star implementation without opimization
 func A_stern_single(result [][]bool, pos1, pos2, pos3, pos4 int) ([][]int, []float64, [2]int, int) {
 
 	var counterPOPS = 0
@@ -803,7 +650,7 @@ func A_stern_single(result [][]bool, pos1, pos2, pos3, pos4 int) ([][]int, []flo
 			continue
 		}
 
-		var neighbours = GetEdgesPosition(result, node[0], node[1])
+		var neighbours = GetEdges(result, node[0], node[1])
 
 		for k := 0; k <= len(neighbours)-1; k++ {
 
@@ -835,6 +682,7 @@ func A_stern_single(result [][]bool, pos1, pos2, pos3, pos4 int) ([][]int, []flo
 
 }
 
+//Dijkstra bidirectional implementation
 func Dijkstra_bi(result [][]bool, pos1, pos2, pos3, pos4 int) ([][]int, []float64, [][]int, []float64, [2]int, int) {
 
 	var counterPOPS = 0
@@ -918,7 +766,7 @@ func Dijkstra_bi(result [][]bool, pos1, pos2, pos3, pos4 int) ([][]int, []float6
 			bothVisited = alreadyVisited2[[2]int{node[0], node[1]}]
 			alreadyVisited[[2]int{node[0], node[1]}] = true
 
-			var neighbours = GetEdgesPosition(result, node[0], node[1])
+			var neighbours = GetEdges(result, node[0], node[1])
 
 			for k := 0; k <= len(neighbours)-1; k++ {
 
@@ -951,7 +799,7 @@ func Dijkstra_bi(result [][]bool, pos1, pos2, pos3, pos4 int) ([][]int, []float6
 			bothVisited2 = alreadyVisited[[2]int{node2[0], node2[1]}]
 			alreadyVisited2[[2]int{node2[0], node2[1]}] = true
 
-			var neighbours = GetEdgesPosition(result, node2[0], node2[1])
+			var neighbours = GetEdges(result, node2[0], node2[1])
 
 			for k := 0; k <= len(neighbours)-1; k++ {
 
@@ -998,7 +846,8 @@ func Dijkstra_bi(result [][]bool, pos1, pos2, pos3, pos4 int) ([][]int, []float6
 
 }
 
-func GetEdgesPosition(result [][]bool, laInt, lnInt int) [][2]int {
+//get edges to neighbours for a specific point in the bitarray
+func GetEdges(result [][]bool, laInt, lnInt int) [][2]int {
 
 	var edges [][2]int
 
@@ -1074,10 +923,11 @@ func GetEdgesPosition(result [][]bool, laInt, lnInt int) [][2]int {
 	return edges
 }
 
+//Dijkstra implementation optimized without precalculation of the distances between the points of the optimization squares
 func Dijkstra_single_optimized(result [][]bool, pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int]int, optEdges [][2][2]int) ([][]int, []float64, [2]int, int) {
 
 	var visitedSquares = map[int]bool{}
-	suchraum := make([]int, len(result)*len(result[0]))
+
 	var counterPOPS = 0
 	var optimizedAmount = 0
 	distances := make([]float64, len(result)*len(result[0]))
@@ -1098,8 +948,6 @@ func Dijkstra_single_optimized(result [][]bool, pos1, pos2, pos3, pos4 int, mapP
 		for j := 0; j <= len(result[i])-1; j++ {
 
 			distances[i*len(result[0])+j] = math.MaxFloat64
-
-			suchraum[i*len(result[0])+j] = 0
 
 			visitedPoints[i*len(result[0])+j] = false
 
@@ -1140,15 +988,9 @@ outer2:
 			continue outer2
 		}
 
-		var x = suchraum[node[0]*len(result[0])+node[1]]
-		x++
-		suchraum[node[0]*len(result[0])+node[1]] = x
-
 		var k = -1
 		var ok = false
 		k, ok = mapPointSquares[[2]int{node[0], node[1]}]
-
-		//var bestSquareDist = math.MaxFloat64
 
 		//node within square and dest pos not within square
 		if !isOptimized && ok && node[0] >= optEdges[k][0][0] && node[1] >= optEdges[k][0][1] && node[0] <= optEdges[k][1][0] && node[1] <= optEdges[k][1][1] && ((pos3 < optEdges[k][0][0] || pos4 < optEdges[k][0][1]) || (pos3 > optEdges[k][1][0] || pos4 > optEdges[k][1][1])) && (node[0] == optEdges[k][0][0] || node[1] == optEdges[k][0][1] || node[0] == optEdges[k][1][0] || node[1] == optEdges[k][1][1]) {
@@ -1216,24 +1058,13 @@ outer2:
 
 				alt = distances[node[0]*len(result[0])+node[1]] + distance
 
-				if visitedPoints[(yAxis)*len(result[0])+optEdges[k][1][1]] == true {
-					println("fehler11111111222222222222233333333")
-					println(node[0])
-					println(node[1])
-
-				}
 				if alt < distances[(yAxis)*len(result[0])+optEdges[k][1][1]] {
 					newItem2 := &Item{pos: [2]int{yAxis, optEdges[k][1][1]}, distancePriority: alt, optimized: true}
 					pre[(yAxis)*len(result[0])+optEdges[k][1][1]] = []int{node[0], node[1]}
 					distances[(yAxis)*len(result[0])+optEdges[k][1][1]] = alt
 
 					heap.Push(&pq, newItem2)
-					if visitedPoints[(yAxis)*len(result[0])+optEdges[k][1][1]] == true {
-						println("fehler11111111222222222222233333333")
-						println(node[0])
-						println(node[1])
 
-					}
 				}
 			}
 
@@ -1247,7 +1078,7 @@ outer2:
 
 		}
 
-		var neighbours = GetEdgesPosition(result, node[0], node[1])
+		var neighbours = GetEdges(result, node[0], node[1])
 
 	neig:
 		for k := 0; k <= len(neighbours)-1; k++ {
@@ -1274,19 +1105,6 @@ outer2:
 
 		if node[0] == pos3 && node[1] == pos4 {
 
-			for i := 0; i <= len(result)-1; i = i + 10 {
-				for j := 0; j <= len(result[i])-1; j = j + 10 {
-
-					if suchraum[i*len(result[0])+j] != 0 {
-
-						//print(" ")
-					} else {
-						//print(" ")
-					}
-				}
-				//println("")
-			}
-
 			return pre, distances, node, counterPOPS
 
 		}
@@ -1297,10 +1115,11 @@ outer2:
 
 }
 
+//A star implementation optimized with precalculation of the distances between the points of the optimization squares
 func A_stern_single_optimized_with_pre(result [][]bool, pos1, pos2, pos3, pos4 int, mapPointSquares map[[2]int]int, optEdges [][2][2]int, dists [][][]float64) ([][]int, []float64, [2]int, int) {
 
 	var visitedSquares = map[int]bool{}
-	suchraum := make([]bool, len(result)*len(result[0]))
+
 	var counterPOPS = 0
 	var optimizedAmount = 0
 	distances := make([]float64, len(result)*len(result[0]))
@@ -1321,7 +1140,6 @@ func A_stern_single_optimized_with_pre(result [][]bool, pos1, pos2, pos3, pos4 i
 		for j := 0; j <= len(result[i])-1; j++ {
 
 			distances[i*len(result[0])+j] = math.MaxFloat64
-			suchraum[i*len(result[0])+j] = false
 
 			visitedPointsInSquare[i*len(result[0])+j] = false
 
@@ -1345,7 +1163,6 @@ func A_stern_single_optimized_with_pre(result [][]bool, pos1, pos2, pos3, pos4 i
 	var node [2]int
 	//var counter = 0
 
-outer2:
 	for pq.Len() > 0 {
 
 		// Find the nearest yet to visit node
@@ -1353,7 +1170,6 @@ outer2:
 		counterPOPS++
 		node = p.pos
 		var isOptimized = p.optimized
-		suchraum[node[0]*len(result[0])+node[1]] = true
 
 		if pre[node[0]*len(result[0])+node[1]][0] != -1 && p.actualDistanceForAStar > distances[node[0]*len(result[0])+node[1]] {
 
@@ -1362,7 +1178,7 @@ outer2:
 
 		if visitedPointsInSquare[node[0]*len(result[0])+node[1]] == true {
 
-			continue outer2
+			continue
 		}
 		var k = -1
 		var ok = false
@@ -1371,7 +1187,6 @@ outer2:
 		//node within square and dest pos not within square
 		if !isOptimized && ok && node[0] >= optEdges[k][0][0] && node[1] >= optEdges[k][0][1] && node[0] <= optEdges[k][1][0] && node[1] <= optEdges[k][1][1] && ((pos3 < optEdges[k][0][0] || pos4 < optEdges[k][0][1]) || (pos3 > optEdges[k][1][0] || pos4 > optEdges[k][1][1])) && (node[0] == optEdges[k][0][0] || node[1] == optEdges[k][0][1] || node[0] == optEdges[k][1][0] || node[1] == optEdges[k][1][1]) {
 
-			//println("hiiiii optimizing")
 			if !visitedSquares[k] {
 				optimizedAmount += (optEdges[k][1][1] - optEdges[k][0][1]) * (optEdges[k][1][0] - optEdges[k][0][0])
 			}
@@ -1379,48 +1194,41 @@ outer2:
 
 			var zahl = 0
 
-			var gefunden = false
-			//oben
-			if !gefunden && node[1] >= optEdges[k][0][1] && node[1] <= optEdges[k][1][1] && node[0] == optEdges[k][0][0] {
+			var foundSquarePoint = false
+			//upper
+			if !foundSquarePoint && node[1] >= optEdges[k][0][1] && node[1] <= optEdges[k][1][1] && node[0] == optEdges[k][0][0] {
 
 				zahl = zahl + node[1] - optEdges[k][0][1]
-				gefunden = true
-			} else if !gefunden {
+				foundSquarePoint = true
+			} else if !foundSquarePoint {
 				zahl = zahl + optEdges[k][1][1] - optEdges[k][0][1] + 1
 			}
 
-			//unten
-			if !gefunden && node[1] >= optEdges[k][0][1] && node[1] <= optEdges[k][1][1] && node[0] == optEdges[k][1][0] {
+			//lower
+			if !foundSquarePoint && node[1] >= optEdges[k][0][1] && node[1] <= optEdges[k][1][1] && node[0] == optEdges[k][1][0] {
 
 				zahl = zahl + node[1] - optEdges[k][0][1]
-				gefunden = true
-			} else if !gefunden {
+				foundSquarePoint = true
+			} else if !foundSquarePoint {
 				zahl = zahl + optEdges[k][1][1] - optEdges[k][0][1] + 1
 			}
 
-			//links
-			if !gefunden && node[0] >= optEdges[k][0][0] && node[0] <= optEdges[k][1][0] && node[1] == optEdges[k][0][1] {
+			//left side
+			if !foundSquarePoint && node[0] >= optEdges[k][0][0] && node[0] <= optEdges[k][1][0] && node[1] == optEdges[k][0][1] {
 
 				zahl = zahl + node[0] - optEdges[k][0][0]
-				gefunden = true
-			} else if !gefunden {
+				foundSquarePoint = true
+			} else if !foundSquarePoint {
 
 				zahl = zahl + optEdges[k][1][0] - optEdges[k][0][0] + 1
 			}
 
-			//rechts
-			if !gefunden && node[0] >= optEdges[k][0][0] && node[0] <= optEdges[k][1][0] && node[1] == optEdges[k][1][1] {
+			//right side
+			if !foundSquarePoint && node[0] >= optEdges[k][0][0] && node[0] <= optEdges[k][1][0] && node[1] == optEdges[k][1][1] {
 
 				zahl = zahl + node[0] - optEdges[k][0][0]
-				gefunden = true
-			} else if !gefunden {
-				println("ssad")
-				println(node[0])
-				println(node[1])
-				println(optEdges[k][0][0])
-				println(optEdges[k][0][0])
-				println(optEdges[k][1][0])
-				println(optEdges[k][1][1])
+				foundSquarePoint = true
+			} else if !foundSquarePoint {
 
 				zahl = zahl + optEdges[k][1][0] - optEdges[k][0][0]
 
@@ -1520,6 +1328,7 @@ outer2:
 
 		}
 
+		//destination point within square
 		if k != -1 && node[0] >= optEdges[k][0][0] && node[1] >= optEdges[k][0][1] && node[0] <= optEdges[k][1][0] && node[1] <= optEdges[k][1][1] && (pos3 >= optEdges[k][0][0] && pos4 >= optEdges[k][0][1] && pos3 <= optEdges[k][1][0] && pos4 <= optEdges[k][1][1]) {
 
 			var distance = GreatCircleDistance(GetCordsFromArrayPosition(len(result), len(result[0]), node[0], node[1]), GetCordsFromArrayPosition(len(result), len(result[0]), pos3, pos4))
@@ -1536,7 +1345,7 @@ outer2:
 			return pre, distances, node, counterPOPS
 		}
 
-		var neighbours = GetEdgesPosition(result, node[0], node[1])
+		var neighbours = GetEdges(result, node[0], node[1])
 
 	neig:
 		for k := 0; k <= len(neighbours)-1; k++ {
@@ -1562,18 +1371,6 @@ outer2:
 		}
 
 		if node[0] == pos3 && node[1] == pos4 {
-
-			for i := 0; i <= len(result)-1; i = i + 10 {
-				for j := 0; j <= len(result[i])-1; j = j + 10 {
-
-					if suchraum[i*len(result[0])+j] == true {
-						//print("X")
-					} else {
-						//	print(" ")
-					}
-				}
-				//	println("")
-			}
 
 			return pre, distances, node, counterPOPS
 

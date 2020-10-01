@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"io"
+	"io/ioutil"
 	"log"
 	"math"
 	"os"
@@ -83,16 +85,16 @@ func main() {
 	t = time.Now()
 	println(t.String())
 
-	fillRotMap()
-	fillRotMap2()
+	fillRotationMap()
+	fillRotationMap2()
 
 	fillresult()
 
 	t = time.Now()
 	println(t.String())
 
-	//jsonString1, _ := json.Marshal(result)
-	//ioutil.WriteFile("data/result", jsonString1, 0644)
+	jsonString1, _ := json.Marshal(result)
+	ioutil.WriteFile("data/result", jsonString1, 0644)
 
 }
 
@@ -180,7 +182,7 @@ inner:
 
 			if nodeIdsAllWays[i] == nil {
 
-				// Remove p[indexxx]
+				// https://yourbasic.org/golang/delete-element-slice/
 				nodeIdsAllWays[i] = nodeIdsAllWays[len(nodeIdsAllWays)-1] // Copy last element to index i.
 				nodeIdsAllWays[len(nodeIdsAllWays)-1] = nil               // Erase last element (write zero value).
 				nodeIdsAllWays = nodeIdsAllWays[:len(nodeIdsAllWays)-1]
@@ -240,7 +242,6 @@ func isCrossing(X bitArray.GeoPoint, P bitArray.GeoPoint, A bitArray.GeoPoint, B
 	//https://gis.stackexchange.com/questions/10808/manually-transforming-rotated-lat-lon-to-regular-lat-lon
 
 	//A, B and X on the same longitude or P antipodal to X
-
 	var t = false
 	if A.Lng == B.Lng || A.Lng == P.Lng || B.Lng == P.Lng || X.Lng == A.Lng || X.Lng == B.Lng || X.Lng == P.Lng || P.Lng == -180 || P.Lng == -90 || P.Lng == 90 {
 		//	println("hier")
@@ -477,7 +478,7 @@ func fillresult() {
 	}
 }
 
-func fillRotMap() {
+func fillRotationMap() {
 
 	var wg sync.WaitGroup
 	wg.Add(len(result))
@@ -497,7 +498,7 @@ func fillRotMap() {
 	wg.Wait()
 }
 
-func fillRotMap2() {
+func fillRotationMap2() {
 	var wg sync.WaitGroup
 	wg.Add(len(polygon))
 	for i := 0; i <= len(polygon)-1; i++ {
