@@ -14,7 +14,7 @@ type Item struct {
 	// The index is needed by update and is maintained by the heap.Interface methods.
 	index     int // The index of the item in the heap.
 	optimized bool
-} // dani bopp
+}
 
 // A PriorityQueue implements heap.Interface and holds Items.
 type PriorityQueue []*Item
@@ -34,7 +34,7 @@ func (pq PriorityQueue) Swap(i, j int) {
 
 func (pq *PriorityQueue) Push(x interface{}) {
 	n := len(*pq)
-	item := x.(*Item) // dani bopp
+	item := x.(*Item)
 	item.index = n
 	*pq = append(*pq, item)
 }

@@ -4,7 +4,7 @@
 <style>
     .container {
         float:right;
-        width: 150px;
+        width: 30%; /*150px*/
 
         clear: both;
       }
@@ -30,7 +30,7 @@
 	
     <title>Quick Start - Leaflet</title>
     
-    <button onclick="send()">Send</button>
+    <button onclick="send()">Send</button><br><br>
     <label for="latitude">Start Latitude</label>
     <input type="text" id="latitude" name="latitude" onkeyup="changeVariable()"><br><br>
     <label for="longitude">Start Longitude</label>
@@ -55,7 +55,7 @@
 
 
 
-<div id="mapid" style="width:1000px;height:500px;"></div>
+<div id="mapid" style="width:65%;height:500px;"></div> 
 <script>
 
 	var mymap = L.map('mapid').setView([51.505, -0.09], 2);
