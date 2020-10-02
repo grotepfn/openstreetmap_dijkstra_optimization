@@ -261,7 +261,7 @@ func main() {
 
 		var _, dis5, _, _ = bitArray.Dijkstra_single_optimized_pre(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
 
-		if dis2[rnd[i][2]*len(result[0])+rnd[i][3]] > (dis[rnd[i][2]*len(result[0])+rnd[i][3]])*1.03 {
+		if dis2[rnd[i][2]*len(result[0])+rnd[i][3]] > (dis[rnd[i][2]*len(result[0])+rnd[i][3]])*1.01 {
 			println("error")
 			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[0])
 			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[1])
@@ -271,7 +271,7 @@ func main() {
 			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]])
 			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]] + 30)
 		}
-		if dis3[rnd[i][2]*len(result[0])+rnd[i][3]] > dis[rnd[i][2]*len(result[0])+rnd[i][3]]*1.03 {
+		if dis3[rnd[i][2]*len(result[0])+rnd[i][3]] > dis[rnd[i][2]*len(result[0])+rnd[i][3]]*1.01 {
 			println("error2")
 			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[0])
 			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[1])
@@ -281,7 +281,7 @@ func main() {
 			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]])
 			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]] + 30)
 		}
-		if dis4[rnd[i][2]*len(result[0])+rnd[i][3]] > dis[rnd[i][2]*len(result[0])+rnd[i][3]]*1.03 {
+		if dis4[rnd[i][2]*len(result[0])+rnd[i][3]] > dis[rnd[i][2]*len(result[0])+rnd[i][3]]*1.01 {
 			println("error3")
 			println(i)
 			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[0])
@@ -293,7 +293,7 @@ func main() {
 			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]] + 30)
 		}
 		//relativley high rounding errors or error in code of dijkstra optimization with precalculation
-		if dis5[rnd[i][2]*len(result[0])+rnd[i][3]] > dis[rnd[i][2]*len(result[0])+rnd[i][3]]*1.05 {
+		if dis5[rnd[i][2]*len(result[0])+rnd[i][3]] > dis[rnd[i][2]*len(result[0])+rnd[i][3]]*1.01 {
 			println("error4")
 			println(i)
 			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[0])

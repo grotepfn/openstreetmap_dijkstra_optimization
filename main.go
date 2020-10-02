@@ -147,6 +147,24 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 		wayCords = append(wayCords, bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), way[i][0], way[i][1]))
 	}
 
+	var divided = true
+	for divided {
+		divided = false
+
+		for i := 0; i <= len(wayCords)-2; i = i + 1 {
+
+			if bitArray.GreatCircleDistance(wayCords[i], wayCords[i+1]) > 5 {
+				divided = true
+
+				var midPoint = getMidPoint(wayCords[i][0], wayCords[i][1], wayCords[i+1][0], wayCords[i+1][1])
+
+				wayCords = insert(wayCords, i+1, midPoint)
+				break
+			}
+
+		}
+	}
+
 	var payload, err = json.Marshal(wayCords)
 
 	if err != nil {

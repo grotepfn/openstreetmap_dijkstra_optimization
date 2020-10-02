@@ -1,0 +1,1 @@
+https://github.com/grotepfn/openstreetmap_dijkstra_optimization/commit/f86c6d1b250e9aefd12989a2cca08fb497988f6a

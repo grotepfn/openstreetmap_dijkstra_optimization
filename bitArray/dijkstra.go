@@ -203,16 +203,11 @@ func A_stern_single_optimized(result [][]bool, pos1, pos2, pos3, pos4 int, mapPo
 			continue
 		}
 
-		if visitedPoints[node[0]*len(result[0])+node[1]] == true {
-
-			continue
-		}
-
 		var k = -1
 		var ok = false
 		k, ok = mapPointSquares[[2]int{node[0], node[1]}]
 
-		if !isOptimized && ok && node[0] >= optEdges[k][0][0] && node[1] >= optEdges[k][0][1] && node[0] <= optEdges[k][1][0] && node[1] <= optEdges[k][1][1] && ((pos3 < optEdges[k][0][0] || pos4 < optEdges[k][0][1]) || (pos3 > optEdges[k][1][0] || pos4 > optEdges[k][1][1])) && (node[0] == optEdges[k][0][0] || node[1] == optEdges[k][0][1] || node[0] == optEdges[k][1][0] || node[1] == optEdges[k][1][1]) {
+		if !isOptimized && ok && node[0] >= optEdges[k][0][0] && node[1] >= optEdges[k][0][1] && node[0] <= optEdges[k][1][0] && node[1] <= optEdges[k][1][1] && ((pos3 < optEdges[k][0][0] || pos4 < optEdges[k][0][1]) || (pos3 > optEdges[k][1][0] || pos4 > optEdges[k][1][1])) {
 			if !visitedSquares[k] {
 				optimizedAmount += (optEdges[k][1][1] - optEdges[k][0][1]) * (optEdges[k][1][0] - optEdges[k][0][0])
 			}
@@ -1164,10 +1159,6 @@ func A_stern_single_optimized_with_pre(result [][]bool, pos1, pos2, pos3, pos4 i
 			continue
 		}
 
-		if visitedPointsInSquare[node[0]*len(result[0])+node[1]] == true {
-
-			//	continue
-		}
 		var k = -1
 		var ok = false
 		k, ok = mapPointSquares[[2]int{node[0], node[1]}]
