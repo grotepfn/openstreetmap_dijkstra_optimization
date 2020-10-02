@@ -138,17 +138,14 @@ var algorithm ="dijkstra"
        clearMap()
       
 
-       popup
-            .setLatLng(LatLng)
-            .setContent("You set start to: " + LatLng.toString())
-            .openOn(mymap);
+       
        
 
         popup
             .setLatLng(LatLngDes)
             .setContent("You set your destination to: " + LatLngDes.toString())
             .openOn(mymap);
-        
+
 
          
            
@@ -197,7 +194,8 @@ function changeVariable(){
         LatLng.lng=document.getElementById("longitude").value;
     }
     function changeVariable3(){
-  
+
+      
         LatLngDes.lat=document.getElementById("desLatitude").value;
       
     }
