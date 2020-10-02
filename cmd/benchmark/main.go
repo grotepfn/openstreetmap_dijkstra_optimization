@@ -112,7 +112,7 @@ func main() {
 	println(t.String())
 	var counterPOPS = 0
 
-	for i := 0; i <= -100; i++ {
+	for i := 0; i <= 100; i++ {
 
 		var _, _, _, counter = bitArray.Dijkstra_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], result)
 		counterPOPS = counterPOPS + counter
@@ -128,7 +128,7 @@ func main() {
 	println(t.String())
 	counterPOPS = 0
 
-	for i := 0; i <= -100; i++ {
+	for i := 0; i <= 100; i++ {
 
 		var _, _, _, _, _, counter = bitArray.Dijkstra_bi(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
 		counterPOPS = counterPOPS + counter
@@ -166,7 +166,7 @@ func main() {
 	println(t.String())
 	counterPOPS = 0
 
-	for i := 0; i <= -100; i++ {
+	for i := 0; i <= 100; i++ {
 
 		var _, _, _, counter = bitArray.Dijkstra_single_optimized(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
 
@@ -182,7 +182,7 @@ func main() {
 	println(t.String())
 	counterPOPS = 0
 
-	for i := 0; i <= -100; i++ {
+	for i := 0; i <= 100; i++ {
 
 		var _, _, _, counter = bitArray.Dijkstra_single_optimized_pre(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
 
@@ -261,8 +261,8 @@ func main() {
 	t = time.Now()
 	println(t.String())
 
-	println("test")
-	for i := 0; i <= 100; i++ {
+	//test if optimization routes are longer than non-optimized routes, added a little error due to floating point operations
+	for i := 0; i <= 1000; i++ {
 
 		var _, dis, _, _ = bitArray.Dijkstra_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], result)
 
@@ -270,15 +270,52 @@ func main() {
 
 		var _, dis3, _, _ = bitArray.A_stern_single_optimized(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
 
-		if dis2[rnd[i][2]*len(result[0])+rnd[i][3]] > (dis[rnd[i][2]*len(result[0])+rnd[i][3]] + 0.1) {
+		var _, dis4, _, _ = bitArray.Dijkstra_single_optimized(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
+
+		var _, dis5, _, _ = bitArray.Dijkstra_single_optimized_pre(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
+
+		if dis2[rnd[i][2]*len(result[0])+rnd[i][3]] > (dis[rnd[i][2]*len(result[0])+rnd[i][3]])*1.03 {
 			println("error")
 			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[0])
 			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[1])
 			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][2], rnd[i][3])[0])
 			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][2], rnd[i][3])[1])
+			println(dis2[rnd[i][2]*len(result[0])+rnd[i][3]])
+			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]])
+			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]] + 30)
 		}
-		if dis3[rnd[i][2]*len(result[0])+rnd[i][3]] > dis[rnd[i][2]*len(result[0])+rnd[i][3]]+0.1 {
+		if dis3[rnd[i][2]*len(result[0])+rnd[i][3]] > dis[rnd[i][2]*len(result[0])+rnd[i][3]]*1.03 {
 			println("error2")
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[0])
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[1])
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][2], rnd[i][3])[0])
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][2], rnd[i][3])[1])
+			println(dis3[rnd[i][2]*len(result[0])+rnd[i][3]])
+			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]])
+			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]] + 30)
+		}
+		if dis4[rnd[i][2]*len(result[0])+rnd[i][3]] > dis[rnd[i][2]*len(result[0])+rnd[i][3]]*1.03 {
+			println("error3")
+			println(i)
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[0])
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[1])
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][2], rnd[i][3])[0])
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][2], rnd[i][3])[1])
+			println(dis4[rnd[i][2]*len(result[0])+rnd[i][3]])
+			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]])
+			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]] + 30)
+		}
+		//relativley high rounding errors or error in code of dijkstra
+		if dis5[rnd[i][2]*len(result[0])+rnd[i][3]] > dis[rnd[i][2]*len(result[0])+rnd[i][3]]*1.10 {
+			println("error4")
+			println(i)
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[0])
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[1])
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][2], rnd[i][3])[0])
+			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][2], rnd[i][3])[1])
+			println(dis5[rnd[i][2]*len(result[0])+rnd[i][3]])
+			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]])
+			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]] + 30)
 		}
 	}
 

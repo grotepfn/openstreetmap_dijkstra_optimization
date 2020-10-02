@@ -9,9 +9,9 @@ import (
 	"testing"
 )
 
-func TestAzimuth(t *testing.T) {
+func TestSquares(t *testing.T) {
 
-	jsonFile, err := os.Open("data/bitArray")
+	jsonFile, err := os.Open("../../data/bitArray")
 
 	if err != nil {
 		fmt.Println(err)
@@ -24,7 +24,7 @@ func TestAzimuth(t *testing.T) {
 
 	var optEdges [][2][2]int
 	var distsOpt [][][]float64
-	jsonFile, err = os.Open("optimization_squares")
+	jsonFile, err = os.Open("../../data/optimization_squares")
 
 	if err != nil {
 		fmt.Println(err)
@@ -34,6 +34,10 @@ func TestAzimuth(t *testing.T) {
 	byteValue, _ = ioutil.ReadAll(jsonFile)
 
 	json.Unmarshal([]byte(byteValue), &optEdges)
+
+	if (len(optEdges)) == 0 {
+		t.Errorf("error")
+	}
 
 	for i := 0; i <= len(optEdges)-1; i++ {
 
@@ -169,7 +173,7 @@ func TestAzimuth(t *testing.T) {
 		}
 	}
 
-	jsonFile, err = os.Open("../temp/dists")
+	jsonFile, err = os.Open("../../data/optimization_squares_distances")
 
 	if err != nil {
 		fmt.Println(err)
@@ -179,6 +183,10 @@ func TestAzimuth(t *testing.T) {
 	byteValue, _ = ioutil.ReadAll(jsonFile)
 
 	json.Unmarshal([]byte(byteValue), &distsOpt)
+
+	if (len(distsOpt)) == 0 {
+		t.Errorf("error5")
+	}
 
 	for i := 0; i <= len(distsOpt)-1; i++ {
 
