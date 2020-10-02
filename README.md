@@ -10,7 +10,7 @@ go run cmd\coastlines\main.go
 
 Create routable shortcut squares within the bitarray with help of main.go.
 ```bash
-o run cmd\optimization\main.go
+go run cmd\optimization\main.go
 ```
 This go program produces a three dimensional array with the optimization squares and 
 saves it to the file optimization_squares.

@@ -120,8 +120,9 @@ func main() {
 	}
 	println("dijkstra single pops")
 	println(counterPOPS)
-	t = time.Now()
-	println(t.String())
+	t2 := time.Now()
+	fmt.Printf("\n", t2.Sub(t))
+	println(" ")
 
 	println("dij bi")
 	t = time.Now()
@@ -136,8 +137,9 @@ func main() {
 	}
 	println("dijkstra bi pops")
 	println(counterPOPS)
-	t = time.Now()
-	println(t.String())
+	t2 = time.Now()
+	fmt.Printf("\n", t2.Sub(t))
+	println(" ")
 
 	jsonFile, err = os.Open("data/optimization_squares")
 
@@ -174,8 +176,9 @@ func main() {
 	}
 	println("dijkstra opt pops")
 	println(counterPOPS)
-	t = time.Now()
-	println(t.String())
+	t2 = time.Now()
+	fmt.Printf("\n", t2.Sub(t))
+	println(" ")
 
 	println("dijksta opt rnd pre")
 	t = time.Now()
@@ -190,8 +193,9 @@ func main() {
 	}
 	println("dijkstra opt pops pre")
 	println(counterPOPS)
-	t = time.Now()
-	println(t.String())
+	t2 = time.Now()
+	fmt.Printf("\n", t2.Sub(t))
+	println(" ")
 
 	println("a stern rnd")
 	t = time.Now()
@@ -206,8 +210,9 @@ func main() {
 	println("pops a stern rnd")
 	println(counterPOPS)
 
-	t = time.Now()
-	println(t.String())
+	t2 = time.Now()
+	fmt.Printf("\n", t2.Sub(t))
+	println(" ")
 
 	println("a stern single opt")
 	t = time.Now()
@@ -223,10 +228,12 @@ func main() {
 	println("pops a stern single opt ")
 	println(counterPOPS)
 
-	println("a stern single opt with pre")
-	t = time.Now()
-	println(t.String())
+	t2 = time.Now()
+	fmt.Printf("\n", t2.Sub(t))
+	println(" ")
 	counterPOPS = 0
+
+	t = time.Now()
 
 	for i := 0; i <= 100; i++ {
 
@@ -236,30 +243,10 @@ func main() {
 	}
 	println("pops a stern single opt with pre")
 	println(counterPOPS)
-	t = time.Now()
-	println(t.String())
+	t2 = time.Now()
+	fmt.Printf("\n", t2.Sub(t))
+	println(" ")
 	counterPOPS = 0
-
-	println("a stern bi vergleich")
-	t = time.Now()
-	println(t.String())
-	counterPOPS = 0
-
-	for i := 0; i <= -1; i++ {
-
-		var _, dists, _, counter = bitArray.A_stern_single(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3])
-		counterPOPS = counterPOPS + counter
-
-		var _, dists2, _, _ = bitArray.A_stern_single_optimized(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges)
-		counterPOPS = counterPOPS + counter
-
-		if dists2[rnd[i][2]*len(result[0])+rnd[i][3]] > dists[rnd[i][2]*len(result[0])+rnd[i][3]] {
-			println("____________________________________________________________________________________________")
-		}
-
-	}
-	t = time.Now()
-	println(t.String())
 
 	//test if optimization routes are longer than non-optimized routes, added a little error due to floating point operations
 	for i := 0; i <= 1000; i++ {
@@ -305,8 +292,8 @@ func main() {
 			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]])
 			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]] + 30)
 		}
-		//relativley high rounding errors or error in code of dijkstra
-		if dis5[rnd[i][2]*len(result[0])+rnd[i][3]] > dis[rnd[i][2]*len(result[0])+rnd[i][3]]*1.10 {
+		//relativley high rounding errors or error in code of dijkstra optimization with precalculation
+		if dis5[rnd[i][2]*len(result[0])+rnd[i][3]] > dis[rnd[i][2]*len(result[0])+rnd[i][3]]*1.05 {
 			println("error4")
 			println(i)
 			println(bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), rnd[i][0], rnd[i][1])[0])
