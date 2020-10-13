@@ -33,5 +33,5 @@ Run the benchmark comparing different routing algorithms with
 go run cmd\benchmark\main.go
 ```
 
-
+A visualized example with help of geojson.io of outcome optimization squares can be found below.
 ![Optimazion squares visualized with geojson.io](https://github.com/grotepfn/openstreetmap_dijkstra_optimization/blob/master/data/dc1f91a2f0a5412b0413bbac4324d057.png?raw=true)
