@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/grotepfn/openstreetmap_dijkstra_optimization/bitArray"
+	geojson "github.com/paulmach/go.geojson"
 )
 
 var result [][]bool
@@ -31,6 +32,23 @@ func main() {
 	jsonString1, _ := json.Marshal(sq)
 	ioutil.WriteFile("data/optimization_squares", jsonString1, 0644)
 	println("done writing")
+
+	var sq2 = make([][][]float64, 844)
+
+	for i := 0; i <= len(sq)-1; i++ {
+
+		//for k := 0; k <= len(sq[i][j])-1; k++ {
+		sq2[i] = append(sq2[i], []float64{bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[i][0][0], sq[i][0][1])[1], bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[i][0][0], sq[i][0][1])[0]})
+
+		sq2[i] = append(sq2[i], []float64{bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[i][0][0], sq[i][1][1])[1], bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[i][0][0], sq[i][1][1])[0]})
+
+		sq2[i] = append(sq2[i], []float64{bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[i][1][0], sq[i][1][1])[1], bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[i][1][0], sq[i][1][1])[0]})
+
+		sq2[i] = append(sq2[i], []float64{bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[i][1][0], sq[i][0][1])[1], bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[i][1][0], sq[i][0][1])[0]})
+
+		sq2[i] = append(sq2[i], []float64{bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[i][0][0], sq[i][0][1])[1], bitArray.GetCordsFromArrayPosition(len(result), len(result[0]), sq[i][0][0], sq[i][0][0])[0]})
+
+	}
 
 	var greatCircleDistances [][][]float64
 
@@ -243,6 +261,12 @@ func main() {
 
 	jsonString1, _ = json.Marshal(greatCircleDistances)
 	ioutil.WriteFile("data/optimization_squares_distances", jsonString1, 0644)
+	println("done writing")
+
+	g := geojson.NewPolygonFeature(sq2[0:844])
+
+	jsonString1, _ = json.Marshal(g)
+	ioutil.WriteFile("data/geoJson", jsonString1, 0644)
 	println("done writing")
 
 }
