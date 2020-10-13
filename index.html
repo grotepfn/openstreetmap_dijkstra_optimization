@@ -32,13 +32,13 @@
     
     <button onclick="send()">Send</button><br>
     <label for="latitude">Start Latitude</label>
-    <input type="text" id="latitude" name="latitude" onkeyup="changeVariable()"><br><br>
+    <input type="text" id="latitude" name="latitude" onkeyup="changeVariable(1)"><br><br>
     <label for="longitude">Start Longitude</label>
-    <input type="text" id="longitude" name="longitude"onkeyup="changeVariable2()"><br><br>
+    <input type="text" id="longitude" name="longitude"onkeyup="changeVariable(2)"><br><br>
     <label for="desLatitude">Destination Latitude</label>
-    <input type="text" id="desLatitude" name="desLatitude"onkeyup="changeVariable3()"><br><br>
+    <input type="text" id="desLatitude" name="desLatitude"onkeyup="changeVariable(3)"><br><br>
     <label for="desLongitude">Destination Longitude</label>
-    <input type="text" id="desLongitude" name="desLongitude"onkeyup="changeVariable4()"><br><br>
+    <input type="text" id="desLongitude" name="desLongitude"onkeyup="changeVariable(4)"><br><br>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </div>
@@ -75,8 +75,8 @@
 
 var firstClick = true
 var polyLine = null
-var LatLng
-var LatLngDes
+var LatLng = {lat: null, lng: null}
+var LatLngDes= {lat: null, lng: null}
 var algorithm ="dijkstra"
 
 	var popup = L.popup();
@@ -184,25 +184,27 @@ var algorithm ="dijkstra"
 }
 
 
-function changeVariable(){
-        LatLng = null
-        LatLng.lat = null
+function changeVariable(i){
+      if (i == 1) {
+      
         LatLng.lat=document.getElementById("latitude").value;
-    }
-
-    function changeVariable2(){
-   
+      }
+      if (i==2){
+        //LatLng = {lat : null, lng : null}
         LatLng.lng=document.getElementById("longitude").value;
-    }
-    function changeVariable3(){
+      }
 
-      
+      if (i == 3) {
+       // LatLngDes = {lat : null, lng : null}
+       console.log("3")
         LatLngDes.lat=document.getElementById("desLatitude").value;
-      
-    }
-    function changeVariable4(){
-   
+      }
+      if (i==4){
+        //LatLngDes = {lat : null, lng : null}
         LatLngDes.lng=document.getElementById("desLongitude").value;
+      }
+
+
     }
 
 
