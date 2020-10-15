@@ -129,50 +129,6 @@ func TestSquares(t *testing.T) {
 		}
 	}
 
-	for k := 0; k <= len(optEdges)-1; k++ {
-
-		for xAxis := optEdges[k][0][1] - 2; xAxis <= optEdges[k][1][1]+2; xAxis++ {
-
-			if len(mapPointSquares[[2]int{optEdges[k][0][0] - 1, xAxis}]) > 0 {
-				t.Errorf("error 1")
-				t.Errorf(strconv.Itoa(optEdges[k][0][0]))
-				t.Errorf(strconv.Itoa(optEdges[k][0][1]))
-				t.Errorf(strconv.Itoa(optEdges[k][1][0]))
-				t.Errorf(strconv.Itoa(optEdges[k][1][1]))
-
-				var x = mapPointSquares[[2]int{optEdges[k][0][0] - 1, xAxis}]
-
-				t.Errorf(strconv.Itoa(optEdges[x[0]][0][0]))
-				t.Errorf(strconv.Itoa(optEdges[x[0]][0][1]))
-				t.Errorf(strconv.Itoa(optEdges[x[0]][1][0]))
-				t.Errorf(strconv.Itoa(optEdges[x[0]][1][1]))
-
-			}
-
-			//lower line
-
-			if len(mapPointSquares[[2]int{optEdges[k][1][0] + 1, xAxis}]) > 0 {
-				t.Errorf("error 2")
-
-			}
-		}
-
-		//left right
-		for yAxis := optEdges[k][0][0] - 1; yAxis <= optEdges[k][1][0]+1; yAxis++ {
-
-			if len(mapPointSquares[[2]int{yAxis, optEdges[k][0][1] - 1}]) > 0 {
-				t.Errorf("error3")
-
-			}
-
-			if len(mapPointSquares[[2]int{yAxis, optEdges[k][1][1] + 1}]) > 0 {
-				t.Errorf("error4")
-
-			}
-
-		}
-	}
-
 	jsonFile, err = os.Open("../../data/optimization_squares_distances")
 
 	if err != nil {
