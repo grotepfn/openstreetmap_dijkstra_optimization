@@ -104,13 +104,15 @@ func Dijkstra_single(pos1, pos2, pos3, pos4 int, result [][]bool) ([][]int, []fl
 
 		// Find the nearest yet to visit node
 		p := heap.Pop(&pq).(*Item)
-		counterPOPS++
+
 		node = p.pos
 
 		if pre[node[0]*len(result[0])+node[1]][0] != -1 && p.distancePriority > distances[node[0]*len(result[0])+node[1]] {
 
 			continue
 		}
+
+		counterPOPS++
 
 		var neighbours = GetEdges(result, node[0], node[1])
 		for k := 0; k <= len(neighbours)-1; k++ {
@@ -194,7 +196,7 @@ func A_stern_single_optimized(result [][]bool, pos1, pos2, pos3, pos4 int, mapPo
 
 		// Find the nearest yet to visit node
 		p := heap.Pop(&pq).(*Item)
-		counterPOPS++
+
 		node = p.pos
 		var isOptimized = p.optimized
 
@@ -202,6 +204,8 @@ func A_stern_single_optimized(result [][]bool, pos1, pos2, pos3, pos4 int, mapPo
 
 			continue
 		}
+
+		counterPOPS++
 
 		var k = -1
 		var ok = false
@@ -411,7 +415,7 @@ func Dijkstra_single_optimized_pre(result [][]bool, pos1, pos2, pos3, pos4 int, 
 
 		// Find the nearest yet to visit node
 		p := heap.Pop(&pq).(*Item)
-		counterPOPS++
+
 		node = p.pos
 		var isOptimized = p.optimized
 
@@ -424,6 +428,8 @@ func Dijkstra_single_optimized_pre(result [][]bool, pos1, pos2, pos3, pos4 int, 
 
 			continue
 		}
+
+		counterPOPS++
 		var k = -1
 		var ok = false
 		k, ok = mapPointSquares[[2]int{node[0], node[1]}]
@@ -639,13 +645,15 @@ func A_stern_single(result [][]bool, pos1, pos2, pos3, pos4 int) ([][]int, []flo
 	for pq.Len() > 0 {
 
 		p := heap.Pop(&pq).(*Item)
-		counterPOPS++
+
 		node = p.pos
 
 		if pre[node[0]*len(result[0])+node[1]][0] != -1 && (p.actualDistanceForAStar) > distances[node[0]*len(result[0])+node[1]] {
 
 			continue
 		}
+
+		counterPOPS++
 
 		var neighbours = GetEdges(result, node[0], node[1])
 
@@ -752,13 +760,14 @@ func Dijkstra_bi(result [][]bool, pos1, pos2, pos3, pos4 int) ([][]int, []float6
 
 		if pq.Len() > 0 {
 			p := heap.Pop(&pq).(*Item)
-			counterPOPS++
+
 			node = p.pos
 
 			if pre[node[0]*len(result[0])+node[1]][0] != -1 && p.distancePriority > distances[node[0]*len(result[0])+node[1]] {
 
 				continue
 			}
+			counterPOPS++
 
 			bothVisited = alreadyVisited2[[2]int{node[0], node[1]}]
 			alreadyVisited[[2]int{node[0], node[1]}] = true
@@ -785,7 +794,7 @@ func Dijkstra_bi(result [][]bool, pos1, pos2, pos3, pos4 int) ([][]int, []float6
 		}
 		if pq2.Len() > 0 {
 			p2 := heap.Pop(&pq2).(*Item)
-			counterPOPS++
+
 			node2 = p2.pos
 
 			if pre2[node2[0]*len(result[0])+node2[1]][0] != -1 && p2.distancePriority > distances2[node2[0]*len(result[0])+node2[1]] {
@@ -793,6 +802,7 @@ func Dijkstra_bi(result [][]bool, pos1, pos2, pos3, pos4 int) ([][]int, []float6
 				continue
 			}
 
+			counterPOPS++
 			bothVisited2 = alreadyVisited[[2]int{node2[0], node2[1]}]
 			alreadyVisited2[[2]int{node2[0], node2[1]}] = true
 
@@ -969,7 +979,7 @@ func Dijkstra_single_optimized(result [][]bool, pos1, pos2, pos3, pos4 int, mapP
 		p := heap.Pop(&pq).(*Item)
 
 		node = p.pos
-		counterPOPS++
+
 		var isOptimized = p.optimized
 		if pre[node[0]*len(result[0])+node[1]][0] != -1 && (p.distancePriority) > distances[node[0]*len(result[0])+node[1]] {
 
@@ -980,6 +990,8 @@ func Dijkstra_single_optimized(result [][]bool, pos1, pos2, pos3, pos4 int, mapP
 
 			continue
 		}
+
+		counterPOPS++
 
 		var k = -1
 		var ok = false
@@ -1150,7 +1162,7 @@ func A_stern_single_optimized_with_pre(result [][]bool, pos1, pos2, pos3, pos4 i
 
 		// Find the nearest yet to visit node
 		p := heap.Pop(&pq).(*Item)
-		counterPOPS++
+
 		node = p.pos
 		var isOptimized = p.optimized
 
@@ -1158,6 +1170,8 @@ func A_stern_single_optimized_with_pre(result [][]bool, pos1, pos2, pos3, pos4 i
 
 			continue
 		}
+
+		counterPOPS++
 
 		var k = -1
 		var ok = false

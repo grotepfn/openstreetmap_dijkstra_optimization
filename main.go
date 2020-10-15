@@ -93,30 +93,37 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 	println(popsAStarOptPre)
 
 	var way [][2]int
+	var distance float64
 	if algorithm == "dijkstra" {
 		println("dijkstra")
 		way = bitArray.GetShortestPath(result, desPos[0], desPos[1], preDij)
 		println(distancesDij[desPos[0]*len(result[0])+desPos[1]])
+		distance = distancesDij[desPos[0]*len(result[0])+desPos[1]]
 	} else if algorithm == "astar" {
 		println("astern")
 		way = bitArray.GetShortestPath(result, desPos[0], desPos[1], preAStar)
 		println(distancesAStar[desPos[0]*len(result[0])+desPos[1]])
+		distance = distancesAStar[desPos[0]*len(result[0])+desPos[1]]
 	} else if algorithm == "dijkstraOpt" {
 		println("dijkstra opt")
 		way = bitArray.GetShortestPath(result, desPos[0], desPos[1], preDijOpt)
 		println(distancesDijOpt[desPos[0]*len(result[0])+desPos[1]])
+		distance = distancesDijOpt[desPos[0]*len(result[0])+desPos[1]]
 	} else if algorithm == "dijkstraOptWithPre" {
 		println("dijkstra opt with pre")
 		way = bitArray.GetShortestPath(result, desPos[0], desPos[1], preDijOptPre)
 		println(distancesDijOptPre[desPos[0]*len(result[0])+desPos[1]])
+		distance = distancesDijOptPre[desPos[0]*len(result[0])+desPos[1]]
 	} else if algorithm == "astarOpt" {
 		println("astar opt")
 		way = bitArray.GetShortestPath(result, desPos[0], desPos[1], preAStarOpt)
 		println(distancesAStarOpt[desPos[0]*len(result[0])+desPos[1]])
+		distance = distancesAStarOpt[desPos[0]*len(result[0])+desPos[1]]
 	} else if algorithm == "astarOptWithPre" {
 		println("astar opt with pre")
 		way = bitArray.GetShortestPath(result, desPos[0], desPos[1], preAStarOptPre)
 		println(distancesAStarOptPre[desPos[0]*len(result[0])+desPos[1]])
+		distance = distancesAStarOptPre[desPos[0]*len(result[0])+desPos[1]]
 	} else if algorithm == "biDijkstra" {
 		println("dijkstra bi")
 		var wayCords [][2]float64
@@ -136,6 +143,7 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 		}
 
 		way = append(way, way2...)
+		distance = distancesDijBi[bestMeetingPoint[0]*len(result[0])+bestMeetingPoint[1]] + distancesDijBi2[bestMeetingPoint[0]*len(result[0])+bestMeetingPoint[1]]
 
 	}
 
@@ -174,6 +182,9 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 
 	enableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
+
+	w.Header().Set("Pragma", fmt.Sprintf("%f", distance))
+
 	w.Write(payload)
 
 }

@@ -5,9 +5,10 @@
     .container {
         float:right;
         width: 30%; /*150px*/
-
+        height: 700px;
         clear: both;
       }
+   
 
       
 </style>
@@ -43,13 +44,13 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </div>
 
+
 	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
 
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-	
 </head>
 <body>
 
@@ -78,7 +79,7 @@ var polyLine = null
 var LatLng = {lat: null, lng: null}
 var LatLngDes= {lat: null, lng: null}
 var algorithm ="dijkstra"
-
+var len = ""
 	var popup = L.popup();
 
 
@@ -105,7 +106,7 @@ var algorithm ="dijkstra"
             firstClick = true
         popup
             .setLatLng(e.latlng)
-            .setContent("Destination: " + e.latlng.toString())
+            .setContent("Destination: " + e.latlng.toString() + " len:" + len)
             .openOn(mymap);
             LatLngDes = e.latlng
 
@@ -118,8 +119,15 @@ var algorithm ="dijkstra"
   .then((response) => {
 
     console.log(response.data);
- 
+    len = response.headers
+    
     polyLine = L.polyline(response.data).addTo(mymap);
+
+    popup
+            .setLatLng(e.latlng)
+            .setContent("Destination: " + e.latlng.toString() + " Length of the route in kilometers:" + len["pragma"])
+            .openOn(mymap);
+            LatLngDes = e.latlng
   });
        
     
@@ -146,8 +154,6 @@ var algorithm ="dijkstra"
             .setContent("You set your destination to: " + LatLngDes.toString())
             .openOn(mymap);
 
-
-         
            
         let url = `http://localhost:8080?lat=${LatLng.lat}&lng=${LatLng.lng}&latDes=${LatLngDes.lat}&lngDes=${LatLngDes.lng}&algorithm=${algorithm}`
         console.log(`Query: ${url}`)
@@ -155,8 +161,14 @@ var algorithm ="dijkstra"
   .then((response) => {
 
     console.log(response.data);
- 
+    console.log(response)
     polyLine = L.polyline(response.data).addTo(mymap);
+    len = response.headers
+    popup
+            .setLatLng(LatLngDes)
+            .setContent("You set your destination to: " + LatLngDes.toString() + " Length of the route in kilometers:" + len["pragma"])
+            .openOn(mymap);
+    
   });
        
     

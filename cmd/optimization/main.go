@@ -33,7 +33,7 @@ func main() {
 	ioutil.WriteFile("data/optimization_squares", jsonString1, 0644)
 	println("done writing")
 
-	var sq2 = make([][][]float64, 844)
+	var sq2 = make([][][]float64, len(sq))
 
 	for i := 0; i <= len(sq)-1; i++ {
 
@@ -307,36 +307,36 @@ func findBiggestSquare(i, j int, s [][2][2]int) (int, int) {
 
 					if i+k >= s[z][0][0] && j+m >= s[z][0][1] && i+k <= s[z][1][0] && j+m <= s[z][1][1] {
 
-						return -3, -3
+						return -1, -1
 					}
 
 					//links
 					if i+k >= s[z][0][0] && i+k <= s[z][1][0] && j+m >= s[z][0][1]-2 && j+m <= s[z][0][1] {
 
-						return k - 3, l_max - 3
+						return k - 1, l_max - 1
 					}
 					//rechts
 					if i+k >= s[z][0][0] && i+k <= s[z][1][0] && j+m <= s[z][1][1]+2 && j+m >= s[z][1][1] {
 
-						return k - 3, l_max - 3
+						return k - 1, l_max - 1
 					}
 
 					//oben!!!!! falsch?
 					if j+m >= s[z][0][1] && j+m <= s[z][1][1] && i+k >= s[z][0][0]-2 && i+k <= s[z][0][0] {
 
-						return k - 3, l_max - 3
+						return k - 1, l_max - 1
 					}
 					//unten
 					if j+m >= s[z][0][1] && j+m <= s[z][1][1] && i+k <= s[z][1][0]+2 && i+k >= s[z][1][0] {
 
-						return k - 3, l_max - 3
+						return k - 1, l_max - 1
 					}
 
 				}
 
 				if (result[i+k][j+m]) != true {
 
-					return k - 3, l_max - 3
+					return k - 1, l_max - 1
 				}
 			}
 
@@ -364,29 +364,29 @@ func findBiggestSquare2(i, j int, s [][2][2]int) int {
 
 					if x >= s[z][0][1]-2 && y >= s[z][0][0]-2 && x <= s[z][1][1]+2 && y <= s[z][1][0]+2 {
 
-						return k - 3
+						return k - 2
 					}
 
 					//links
 					if x >= s[z][0][1]-2 && x <= s[z][0][1] && y >= s[z][0][0]-2 && y <= s[z][1][0]+2 {
 
-						return k - 3
+						return k - 2
 					}
 					//rechts
 					if x >= s[z][1][1] && x <= s[z][1][1]+2 && y <= s[z][0][0]-2 && y >= s[z][1][0]+2 {
 
-						return k - 3
+						return k - 2
 					}
 
 					//oben
 					if y >= s[z][0][0]-2 && y <= s[z][0][0] && x >= s[z][0][1]-2 && x <= s[z][1][1]+2 {
 
-						return k - 3
+						return k - 2
 					}
 					//unten
 					if y <= s[z][1][0]+2 && y >= s[z][1][0] && x <= s[z][1][1]+2 && x >= s[z][0][1]-2 {
 
-						return k - 3
+						return k - 2
 					}
 
 				}
@@ -394,7 +394,7 @@ func findBiggestSquare2(i, j int, s [][2][2]int) int {
 				//	}
 
 				if result[y][x] != true {
-					return k - 3
+					return k - 2
 				}
 
 			}
@@ -402,5 +402,5 @@ func findBiggestSquare2(i, j int, s [][2][2]int) int {
 		k++
 	}
 
-	return k - 3
+	return k - 2
 }

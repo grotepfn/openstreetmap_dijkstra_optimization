@@ -87,7 +87,7 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
-	for i := 0; i <= 1000; i++ {
+	for i := 0; i <= 100; i++ {
 
 		var y1 = rand.Intn(500)
 
@@ -101,6 +101,12 @@ func main() {
 			y2 = rand.Intn(500)
 			v1 = rand.Intn(1000)
 			v2 = rand.Intn(1000)
+		}
+
+		var _, dis, _, _ = bitArray.A_stern_single(result, y1, v1, y2, v2)
+		if dis[y2*len(result[0])+v2] > 1000000 {
+			i--
+			continue
 		}
 
 		rnd = append(rnd, [4]int{y1, v1, y2, v2})
@@ -185,7 +191,7 @@ func main() {
 	println(t.String())
 	counterPOPS = 0
 
-	for i := 0; i <= 100; i++ {
+	for i := 0; i <= -100; i++ {
 
 		var _, _, _, counter = bitArray.Dijkstra_single_optimized_pre(result, rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], mapPointSquares, optEdges, distsOpt)
 
@@ -248,8 +254,10 @@ func main() {
 	println(" ")
 	counterPOPS = 0
 
+	var disDij = 0.0
+	var disDijoptpre = 0.0
 	//test if optimization routes are longer than non-optimized routes, added a little error due to floating point operations
-	for i := 0; i <= 1000; i++ {
+	for i := 0; i <= 100; i++ {
 
 		var _, dis, _, _ = bitArray.Dijkstra_single(rnd[i][0], rnd[i][1], rnd[i][2], rnd[i][3], result)
 
@@ -304,7 +312,16 @@ func main() {
 			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]])
 			println(dis[rnd[i][2]*len(result[0])+rnd[i][3]] + 30)
 		}
+
+		if dis[rnd[i][2]*len(result[0])+rnd[i][3]] < 100000000 {
+			disDij = disDij + dis[rnd[i][2]*len(result[0])+rnd[i][3]]
+			disDijoptpre = disDijoptpre + dis5[rnd[i][2]*len(result[0])+rnd[i][3]]
+		}
+
 	}
+
+	println(disDij)
+	println(disDijoptpre)
 
 	for i := 0; i <= len(result)-1; i = i + 10 {
 		for j := 0; j <= len(result[i])-1; j = j + 10 {
